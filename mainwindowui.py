@@ -1,0 +1,201 @@
+import os
+import sys
+
+from mainwindowfunc import * # Contains our functionality so we can read this file properly
+from constants import * # Contains our paths
+from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QComboBox, QVBoxLayout, QWidget, QLineEdit, \
+    QDialog
+
+from modfileutils import merge_mod_dbs
+from reordermodsui import ReorderModsWindow
+
+
+# load our main window and hook all behaviors/connections to other windows here
+# Functions attached to buttons should be in another file for readability
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        # Load mainwindow file
+        uic.loadUi(os.path.join(UI_FOLDER_PATH, 'mainwindow.ui'), self)
+        # ATTACH ALL BUTTON BEHAVIOR IN HERE
+
+        # DIR PLAIN TEXT SETUP
+        self.modsDirPathField.setPlainText(get_config_option(SETTINGS_INI,
+                                                             "config",
+                                                             "LauncherLoader",
+                                                             "modsdir"))
+
+        self.dolphinDirPathField.setPlainText(get_config_option(SETTINGS_INI,
+                                                                "config",
+                                                                "LauncherLoader",
+                                                                "dolphindir"))
+
+        self.texturesDirPathField.setPlainText(get_config_option(SETTINGS_INI,
+                                                                 "config",
+                                                                 "LauncherLoader",
+                                                                 "texturesdir"))
+
+        # DIR BUTTON SETUP
+        self.dolphinDirToolbutton.clicked.connect(self.set_directory)
+        self.modsDirToolbutton.clicked.connect(self.set_directory)
+        self.texturesDirToolbutton.clicked.connect(self.set_directory)
+        self.openModsPushbutton.clicked.connect(self.open_directory)
+        self.openDolphinPushbutton.clicked.connect(self.open_directory)
+
+        # GAME COMBOBOX
+        # Create a dictionary of added games from the add_new_game function
+        self.currentGameCombobox.addItems(update_gamelist_combobox())
+        self.currentGameCombobox.activated.connect(self.game_combo_box_option_select)
+
+        # BOTTOM ROW OF BUTTONS
+        self.refreshListButton.clicked.connect(self.refresh_modsUI)
+
+        # SAVE BUTTONS
+        self.saveModsPushbutton.clicked.connect(self.save_mods)
+
+        # MOD LISTVIEW
+        # TODO: Change to tableview instead to allow for multiple columns
+        mod_entries = populate_modlist(self.currentGameCombobox.currentText())
+
+        self.model = QtGui.QStandardItemModel()
+        self.model.itemChanged.connect(self.get_checked_mod) # Attach to each item's checkbox for enable/disable behaviors
+        self.modsListView.setModel(self.model)
+
+        for i in mod_entries:
+            item = QtGui.QStandardItem(i)
+            item.setEditable(False)  # User cannot edit names
+            item.setCheckable(True)  # User can check to enable/disable mods
+            item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), item.text()))
+            self.model.appendRow(item)  # Add to table
+            # TODO: Change to tableview instead to allow for multiple columns
+            # TODO: Add column and header with mod details (from mod.ini)
+            # TODO: Add ordering box for saving mods (numbered in priority)
+        print("Loaded " + str(len(mod_entries)) + " mods.\n")
+
+    # FUNCTIONS
+
+    def save_mods(self):
+        # Save ALL activated mod databases here
+        # 1. Retrieve all active mods
+        checked_mods = []
+        for index in range(self.model.rowCount()):
+            current_item = self.model.item(index)
+            enabled_mod = get_enabled_mods(self.currentGameCombobox.currentText(), current_item.text(), return_titles=True)
+            if enabled_mod:
+                checked_mods.append(enabled_mod)
+            pass
+
+        # save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
+
+        # This allows re-ordering mods to prevent collisions
+        # Pauses execution until window is closed
+        # TODO: Figure out how to make this optional
+        # Add config option for this?
+        reorder = ReorderModsWindow(checked_mods)
+        checked_mods.clear()
+        if reorder.exec():
+            for index in range (reorder.listWidget.count()):
+                checked_mods.append(reorder.listWidget.item(index).text())
+            # 2. Send checked mods for parsing of their DBs
+            save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
+            return
+
+        # If cancelled, don't save.
+        print("Saving mods cancelled.\n")
+        return
+
+    def get_checked_mod(self, item):
+        if item.checkState() == QtCore.Qt.CheckState.Checked:
+            print(item.text() + " checked. Loading...")
+            # Enable mod:
+            # 1. Get mod path
+            # 2. Generate DB
+            # 3. Add to active mod list
+            enable_mod(self.currentGameCombobox.currentText(), item.text())
+        else:
+            print(item.text() + " unchecked. Loading...")
+            disable_mod(self.currentGameCombobox.currentText(), item.text())
+            pass
+        pass
+
+    def refresh_modsUI(self):
+        # Check game title, then check mod entries for game
+        mod_entries = populate_modlist(self.currentGameCombobox.currentText())
+
+        self.model = QtGui.QStandardItemModel()
+        self.model.itemChanged.connect(self.get_checked_mod)  # Attach to each item's checkbox for enable/disable behaviors
+        self.modsListView.setModel(self.model)
+        self.model.clear()  # Clear all items first before adding new mods
+        for i in mod_entries:
+            item = QtGui.QStandardItem(i)
+            item.setEditable(False)  # User cannot edit names
+            item.setCheckable(True)  # User can enable/disable mods
+            item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), item.text()))
+            self.model.appendRow(item)  # Add to table
+            # TODO: Change to tableview instead to allow for multiple columns
+            # TODO: Add column and header with mod details (from mod.ini)
+            # TODO: Add ordering box for saving mods (numbered in priority)
+        print("Loaded " + str(len(mod_entries)) + " mods.\n")
+        pass
+
+
+    # Opens the directory for these
+    def open_directory(self):
+        sent_button = self.sender()
+        if sent_button == self.openModsPushbutton:
+            os.startfile(get_config_option(SETTINGS_INI,
+                                           "config",
+                                           "LauncherLoader",
+                                           "modsdir"))
+
+        if sent_button == self.openDolphinPushbutton:
+            os.startfile(get_config_option(SETTINGS_INI,
+                                           "config",
+                                           "LauncherLoader",
+                                           "dolphindir"))
+        pass
+
+
+    # Sets a directory into the correct config file for later use, update text box
+    def set_directory(self):
+        sent_button = self.sender()
+        if sent_button == self.modsDirToolbutton:
+            self.modsDirPathField.setPlainText(set_up_directory('modsdir'))
+        elif sent_button == self.dolphinDirToolbutton:
+            self.dolphinDirPathField.setPlainText(set_up_directory('dolphindir'))
+        elif sent_button == self.texturesDirToolbutton:
+            self.texturesDirPathField.setPlainText(set_up_directory('texturesdir'))
+        pass
+
+
+    # Adds a new game or refreshes the mods list view for the new game chosen
+    def game_combo_box_option_select(self):
+        selected_item = self.currentGameCombobox.currentText()
+        if selected_item == "Add new game here":
+            gameID, gameTitle = add_new_game_from_dolphin()
+
+            if gameID is None and gameTitle is None:
+                return
+
+           # Insert at top of list to ensure add game button stays at bottom
+            self.currentGameCombobox.insertItem(0, gameTitle.lower())
+            # Add this game title to settings.ini, set box to new title
+            set_config_option(SETTINGS_INI,
+                              path_to_config=os.path.join(os.getcwd(), "config"),
+                              section_to_write="GameList",
+                              option_to_write=gameTitle,
+                              new_value=gameID)
+            self.currentGameCombobox.setCurrentText(gameTitle.lower())
+        else:
+            # Profile changed, update mod list here
+            self.refresh_modsUI()
+        pass
+
+
+# Runs our main window here, executed from main.py
+def run_main_window_loop():
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()
