@@ -178,14 +178,18 @@ class MainWindow(QMainWindow):
             if gameID is None and gameTitle is None:
                 return
 
-           # Insert at top of list to ensure add game button stays at bottom
-            self.currentGameCombobox.insertItem(0, gameTitle.lower())
-            # Add this game title to settings.ini, set box to new title
-            set_config_option(SETTINGS_INI,
-                              path_to_config=os.path.join(os.getcwd(), "config"),
-                              section_to_write="GameList",
-                              option_to_write=gameTitle,
-                              new_value=gameID)
+            # Checks if game is already in list to prevent duplicates
+            AllItems = [self.currentGameCombobox.itemText(i) for i in range(self.currentGameCombobox.count())]
+
+            if gameTitle.lower() not in AllItems:
+                # Add this game title to settings.ini, set box to new title
+                self.currentGameCombobox.insertItem(0, gameTitle.lower())
+                set_config_option(SETTINGS_INI,
+                                  path_to_config=os.path.join(os.getcwd(), "config"),
+                                  section_to_write="GameList",
+                                  option_to_write=gameTitle,
+                                  new_value=gameID)
+
             self.currentGameCombobox.setCurrentText(gameTitle.lower())
         else:
             # Profile changed, update mod list here
