@@ -53,6 +53,7 @@ class MainWindow(QMainWindow):
 
         # SAVE BUTTONS
         self.saveModsPushbutton.clicked.connect(self.save_mods)
+        self.saveAndPlayPushbutton.clicked.connect(self.save_and_start_game)
 
         # MOD LISTVIEW
         # TODO: Change to tableview instead to allow for multiple columns
@@ -75,6 +76,12 @@ class MainWindow(QMainWindow):
 
     # FUNCTIONS
 
+    # Wrap save mods and start the dolphin game selected
+    def save_and_start_game(self):
+        self.save_mods()
+        start_dolphin_game(self.currentGameCombobox.currentText())
+        pass
+
     def save_mods(self):
         # Save ALL activated mod databases here
         # 1. Retrieve all active mods
@@ -86,12 +93,16 @@ class MainWindow(QMainWindow):
                 checked_mods.append(enabled_mod)
             pass
 
-        # save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
-
         # This allows re-ordering mods to prevent collisions
         # Pauses execution until window is closed
         # TODO: Figure out how to make this optional
         # Add config option for this?
+
+        # If no mods are checked or there's only one mod, just save anyway and skip the window.
+        if not checked_mods or len(checked_mods) <= 1:
+            save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
+            return
+
         reorder = ReorderModsWindow(checked_mods)
         checked_mods.clear()
         if reorder.exec():

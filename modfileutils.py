@@ -118,6 +118,7 @@ def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None):
     for dirpath, dirnames, filenames in os.walk(path_to_mod_root, topdown=True):
 
         # TODO: Update later so it's not hardcoded to these two folders only
+        # GC ISOs follow this format, Wii ISOs have partitions and update folders so we need to add support for those
         # Only add files from these directories
         inFilesPath = os.path.basename(dirpath) == 'files'
         inSysPath = os.path.basename(dirpath) == "sys"
@@ -145,6 +146,7 @@ def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None):
     # path_to_isoDB_root = Path("C:\\Users\\smasi\\Downloads\\RidersDolphin3Windows\\x64\\ReaperCoMods\\CurrentTE")
 
     # TODO: Update later so it's not hardcoded to these two folders only
+    # GC ISOs follow this format, Wii ISOs have partitions and update folders so we need to add support for those
     # Only add these if the dicts exist
     if sys_dict: output_dict.update({"sys": sys_dict})
     if files_dict: output_dict.update({"files": files_dict})

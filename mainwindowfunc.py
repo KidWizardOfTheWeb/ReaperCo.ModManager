@@ -6,7 +6,7 @@ import shutil
 
 from PyQt6 import QtCore
 
-from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, DB_INI
+from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, DB_INI, MOD_ISO_DIR, DOLPHIN_EXE
 from filemanagerutils import get_config_option, set_config_option, generate_modsDB_ini
 from modfileutils import generate_file_DB_for_mod, set_modsDB, get_modsDB, merge_mod_dbs, move_mod_files_to_final_place
 import subprocess
@@ -369,3 +369,48 @@ def get_enabled_mods(game_title, mod_title, return_titles=False):
         return None
     else:
         return QtCore.Qt.CheckState.Unchecked
+
+
+def start_dolphin_game(game_title):
+    path_to_dolphin = get_config_option(SETTINGS_INI,
+                                        "config",
+                                        "LauncherLoader",
+                                        "dolphindir")
+    path_to_mods = get_config_option(SETTINGS_INI,
+                                     "config",
+                                     "LauncherLoader",
+                                     "modsdir")
+
+    if not path_to_dolphin and not path_to_mods:
+        # Error window here, print what's missing, end function
+        print("Error here! Path to dolphin or path to mods missing.")
+        return
+
+
+    # Get what games are in our game list
+    # By getting the keys, we can track our folders because of our schema (indeed)
+    game_dict = get_config_option(SETTINGS_INI, "config", "GameList", return_keys=True, return_values=True)
+
+    # Match the key-value to current_game
+    if not game_dict:
+        return ["No mods. Open a game and add one!"]
+
+    gameID = game_dict[game_title]
+
+    # Return dol file selected
+    # This should hopefully exist
+    path_to_game_dol = os.path.join(Path(path_to_mods), Path(gameID), Path(MOD_ISO_DIR.format(gameID)), Path("sys"), Path("main.dol"))
+
+    if not os.path.exists(path_to_game_dol):
+        print("Error here! Path to dol has no sys folder.")
+        return
+
+    # get dolphin location, subproc and detach
+    path_to_dolphin_exe = os.path.join(Path(path_to_dolphin), Path(DOLPHIN_EXE))
+
+    try:
+        dolphin_proc = subprocess.Popen([path_to_dolphin_exe, "-e", path_to_game_dol],
+                               creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed with return code {e.returncode}")
+        return
