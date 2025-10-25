@@ -62,7 +62,7 @@
            <number>5</number>
           </property>
           <item row="0" column="0">
-           <widget class="QGroupBox" name="groupBox_3">
+           <widget class="QGroupBox" name="modsBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -71,6 +71,9 @@
             </property>
             <property name="title">
              <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>

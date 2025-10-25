@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Fixed making dupe games when adding another, redumps selected game instead">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Fixed a bug regarding having zero games, would have invalid checkboxes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainwindowfunc.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowfunc.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainwindowui.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modfileutils.py" beforeDir="false" afterPath="$PROJECT_DIR$/modfileutils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/mainwindow.ui" beforeDir="false" afterPath="$PROJECT_DIR$/windowUIFiles/mainwindow.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +159,23 @@
       <option name="project" value="LOCAL" />
       <updated>1761096372430</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added ReadMe, start game button functionality, adjusted reordering">
+      <option name="closed" value="true" />
+      <created>1761417430834</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1761417430834</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Fixed a bug regarding having zero games, would have invalid checkboxes">
+      <option name="closed" value="true" />
+      <created>1761428389410</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1761428389410</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -180,7 +193,9 @@
     <MESSAGE value="Fully functional" />
     <MESSAGE value="Added requirements.txt" />
     <MESSAGE value="Fixed making dupe games when adding another, redumps selected game instead" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed making dupe games when adding another, redumps selected game instead" />
+    <MESSAGE value="Added ReadMe, start game button functionality, adjusted reordering" />
+    <MESSAGE value="Fixed a bug regarding having zero games, would have invalid checkboxes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a bug regarding having zero games, would have invalid checkboxes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -191,23 +206,18 @@
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>335</line>
-          <option name="timeStamp" value="54" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>196</line>
+          <line>207</line>
           <option name="timeStamp" value="55" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>81</line>
+          <line>87</line>
           <option name="timeStamp" value="57" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>383</line>
+          <line>386</line>
           <option name="timeStamp" value="59" />
         </line-breakpoint>
       </breakpoints>

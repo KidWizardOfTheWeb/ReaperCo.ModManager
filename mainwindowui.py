@@ -72,9 +72,15 @@ class MainWindow(QMainWindow):
             # TODO: Change to tableview instead to allow for multiple columns
             # TODO: Add column and header with mod details (from mod.ini)
             # TODO: Add ordering box for saving mods (numbered in priority)
+        self.set_modbox_title("Loaded " + str(len(mod_entries)) + " mods.\n")
         print("Loaded " + str(len(mod_entries)) + " mods.\n")
 
     # FUNCTIONS
+
+    # Handles text display for info
+    def set_modbox_title(self, text):
+        self.modsBox.setTitle(text)
+        pass
 
     # Wrap save mods and start the dolphin game selected
     def save_and_start_game(self):
@@ -119,20 +125,28 @@ class MainWindow(QMainWindow):
     def get_checked_mod(self, item):
         if item.checkState() == QtCore.Qt.CheckState.Checked:
             print(item.text() + " checked. Loading...")
+            # Make this ASYNC
+            self.set_modbox_title(item.text() + " checked. Loading...")
             # Enable mod:
             # 1. Get mod path
             # 2. Generate DB
             # 3. Add to active mod list
             enable_mod(self.currentGameCombobox.currentText(), item.text())
+            self.set_modbox_title(item.text() + " enabled.\n")
         else:
             print(item.text() + " unchecked. Loading...")
+            # Make this ASYNC
+            self.set_modbox_title(item.text() + " unchecked. Loading...")
             disable_mod(self.currentGameCombobox.currentText(), item.text())
+            self.set_modbox_title(item.text() + " disabled.\n")
             pass
         pass
 
     def refresh_modsUI(self):
         # Check game title, then check mod entries for game
         mod_entries = populate_modlist(self.currentGameCombobox.currentText())
+        self.set_modbox_title("Loading " + str(len(mod_entries)) + " mods...")
+        # print("Loading " + str(len(list_of_mods)) + " mods...")
 
         self.model = QtGui.QStandardItemModel()
         self.model.itemChanged.connect(self.get_checked_mod)  # Attach to each item's checkbox for enable/disable behaviors
@@ -148,6 +162,7 @@ class MainWindow(QMainWindow):
             # TODO: Add column and header with mod details (from mod.ini)
             # TODO: Add ordering box for saving mods (numbered in priority)
         print("Loaded " + str(len(mod_entries)) + " mods.\n")
+        self.set_modbox_title("Loaded " + str(len(mod_entries)) + " mods.\n")
         pass
 
 
