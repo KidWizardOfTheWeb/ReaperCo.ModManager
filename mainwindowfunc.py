@@ -32,7 +32,6 @@ def populate_modlist(current_game):
     # Get the modsDB.ini file and check/add to mods section
     path_to_mods_db = os.path.join(game_mod_dir, MODSDB_INI)
     path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID)))
-    # list_of_mods = os.listdir(path_to_mods_folder)
 
     while True:
         try:
@@ -42,6 +41,16 @@ def populate_modlist(current_game):
         except:
             print("No modsDB.ini found for game! Generating and attempting to add mods...")
             generate_modsDB_ini(path_to_mods_db)
+
+    # Regen DB if a folder does not exist
+    for mod in list_of_mods:
+        mod_to_test = os.path.join(path_to_mods_folder, Path(mod))
+        if not os.path.exists(mod_to_test):
+            generate_modsDB_ini(path_to_mods_db, force_overwrite=True)
+            set_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, gameID=gameID)
+            list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir)
+            # Don't need to do this for every one of them since this checks all of them, just break the first time you see it
+            break
 
     print("Loading " + str(len(list_of_mods)) + " mods...")
 

@@ -35,18 +35,19 @@ def generate_settings_ini(settings_ini):
 
 
 # USE THIS WHEN ADDING A NEW GAME
-def generate_modsDB_ini(modsDB_ini):
+def generate_modsDB_ini(modsDB_ini, force_overwrite=False):
     # config_dir = os.path.join(Path(cwdPath), "config")
     # THIS NEEDS TO BE GENERATED PER GAME. MOVE TO A LATER FUNCTION.
     # modsDB_ini = os.path.join(config_dir, "modsDB.ini")
 
     # Check if modsDB.ini exists
     # Generate that in settings directory if it does not exist
-    if os.path.isfile(modsDB_ini):
+    if os.path.isfile(modsDB_ini) and not force_overwrite:
         print("modsDB.ini already generated.\n")
         return
 
-    print("No modsDB.ini found. Generating new file in generated config folder.")
+    if not force_overwrite:
+        print("No modsDB.ini found. Generating new file in generated config folder.")
 
     config_data = configparser.ConfigParser()
 
