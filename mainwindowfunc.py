@@ -339,6 +339,9 @@ def disable_mod(game_title, mod_title):
 
 def get_enabled_mods(game_title, mod_title, return_titles=False):
     # Get all relevant data by matching current item to the mod needed
+    if game_title == "Add new game here":
+        return QtCore.Qt.CheckState.Unchecked
+
     mod_GUID, mod_found_path, game_mod_dir = match_mod(game_title, mod_title)
 
     # Get all active mod keys
