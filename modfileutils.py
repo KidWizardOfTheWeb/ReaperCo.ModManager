@@ -302,7 +302,14 @@ def move_mod_files_to_final_place(mod_iso_db):
 
         # Make the directory first before each iteration
         new_directory = os.path.join(Path(mod_iso_db), Path(directory))
+
+        # Clear this directory first to avoid holdover files
+        # Possibly find a way to detect mod files to remove? Add property to dict possibly?
+        shutil.rmtree(new_directory)
+
+        # Generate the directory again and place files
         os.makedirs(new_directory, exist_ok=True)
+
         for filename, filedata in filelist.items():
             shutil.copy(filedata[0], new_directory)
             pass
