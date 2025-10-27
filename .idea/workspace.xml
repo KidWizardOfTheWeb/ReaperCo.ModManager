@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Fixed a bug where files not included in base files are never removed on save">
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Fixed a bug where DBs are not regenerated on save, fixed multiple dolphin instances opening">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modfileutils.py" beforeDir="false" afterPath="$PROJECT_DIR$/modfileutils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +49,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.MainRun.executor": "Debug",
+    "Python.MainRun.executor": "Run",
     "Python.filehashutils.executor": "Run",
     "Python.main.executor": "Debug",
     "Python.mainwindowui.executor": "Run",
@@ -198,7 +197,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761453704109</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Fixed a bug where DBs are not regenerated on save, fixed multiple dolphin instances opening">
+      <option name="closed" value="true" />
+      <created>1761544549819</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1761544549819</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -221,7 +228,8 @@
     <MESSAGE value="Added groupbox indicator for some actions" />
     <MESSAGE value="Fixed a bug where nonexistent mod folders may not exist and permeate in DBs" />
     <MESSAGE value="Fixed a bug where files not included in base files are never removed on save" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed a bug where files not included in base files are never removed on save" />
+    <MESSAGE value="Fixed a bug where DBs are not regenerated on save, fixed multiple dolphin instances opening" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a bug where DBs are not regenerated on save, fixed multiple dolphin instances opening" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -235,31 +243,6 @@
           <url>file://$PROJECT_DIR$/mainwindowui.py</url>
           <line>211</line>
           <option name="timeStamp" value="55" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>87</line>
-          <option name="timeStamp" value="57" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>395</line>
-          <option name="timeStamp" value="59" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>272</line>
-          <option name="timeStamp" value="61" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>422</line>
-          <option name="timeStamp" value="62" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>271</line>
-          <option name="timeStamp" value="63" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
