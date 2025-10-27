@@ -423,6 +423,7 @@ def start_dolphin_game(game_title):
     try:
         dolphin_proc = subprocess.Popen([path_to_dolphin_exe, "-e", path_to_game_dol],
                                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+        return
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}")
         return

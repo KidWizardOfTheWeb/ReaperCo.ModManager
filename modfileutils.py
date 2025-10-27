@@ -260,6 +260,9 @@ def merge_mod_dbs(active_mods, game_title):
             # We found it, we enable this one
             mod_found_path.append(mod_path)
 
+            # If we found one to enable, regen the databases just in case files were updated
+            generate_file_DB_for_mod(mod_path, mod_path)
+
     # Get ORIGINAL ISO db first
     original_iso_db = os.path.join(Path(game_mod_dir), Path(ORIGINAL_ISO_DIR.format(gameID)))
 
