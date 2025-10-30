@@ -424,9 +424,20 @@ def start_dolphin_game(game_title):
     # get dolphin location, subproc and detach
     path_to_dolphin_exe = os.path.join(Path(path_to_dolphin), Path(DOLPHIN_EXE))
 
-    # , "-b"
+    # Either start dolphin + game with 0, or just game with 1
+    play_behavior = int(get_config_option(SETTINGS_INI,
+                                          "config",
+                                          "LauncherLoader",
+                                          "saveandplaybehavior"))
+
+    params = []
+    if play_behavior == 0:
+        params = [path_to_dolphin_exe, "-e", path_to_game_dol]
+    elif play_behavior == 1:
+        params = [path_to_dolphin_exe, "-e", path_to_game_dol, "-b"]
+
     try:
-        dolphin_proc = subprocess.Popen([path_to_dolphin_exe, "-e", path_to_game_dol],
+        dolphin_proc = subprocess.Popen(params,
                                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
         return
     except subprocess.CalledProcessError as e:
@@ -451,4 +462,35 @@ def create_mod_processing(new_mod_data, game_title):
     path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID), Path(new_mod_data["Mod Title"])))
 
     create_mod_dirs(new_mod_data, path_to_mods_folder)
+    pass
+
+
+# Manages radio buttons on first load only
+def check_play_behavior(radio_button_text):
+    play_behavior = int(get_config_option(SETTINGS_INI,
+                                      "config",
+                                      "LauncherLoader",
+                                      "saveandplaybehavior"))
+
+    if radio_button_text == 'Launch Dolphin on play':
+        return True if play_behavior == 0 else False
+    elif radio_button_text == "Launch Game on play":
+        return True if play_behavior == 1 else False
+    pass
+
+
+# Write to config
+def set_play_behavior(radio_button_text, is_checked):
+    if radio_button_text == 'Launch Dolphin on play' and is_checked:
+        set_config_option(SETTINGS_INI,
+                          path_to_config=os.path.join(os.getcwd(), "config"),
+                          section_to_write="LauncherLoader",
+                          option_to_write="saveandplaybehavior",
+                          new_value="0")
+    elif radio_button_text == "Launch Game on play" and is_checked:
+        set_config_option(SETTINGS_INI,
+                          path_to_config=os.path.join(os.getcwd(), "config"),
+                          section_to_write="LauncherLoader",
+                          option_to_write="saveandplaybehavior",
+                          new_value="1")
     pass

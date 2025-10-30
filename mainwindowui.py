@@ -63,6 +63,12 @@ class MainWindow(QMainWindow):
         # THREAD POOL
         self.threadpool = QThreadPool()
 
+        # SETTINGS BUTTONS - make sure to change these on load depending on the settings toggles
+        self.launchDolphinPlayRadiobutton.setChecked(check_play_behavior(self.launchDolphinPlayRadiobutton.text()))
+        self.launchDolphinPlayRadiobutton.toggled.connect(self.toggle_play_behavior)
+        self.playGameRadiobutton.setChecked(check_play_behavior(self.playGameRadiobutton.text()))
+        self.playGameRadiobutton.toggled.connect(self.toggle_play_behavior)
+
         # DIR PLAIN TEXT SETUP
         self.modsDirPathField.setPlainText(get_config_option(SETTINGS_INI,
                                                              "config",
@@ -120,6 +126,10 @@ class MainWindow(QMainWindow):
         print("Loaded " + str(len(mod_entries)) + " mods.\n")
 
     # FUNCTIONS
+
+    def toggle_play_behavior(self, checked):
+        set_play_behavior(self.sender().text(), checked)
+        pass
 
     # Adds mods
     def create_mod(self):

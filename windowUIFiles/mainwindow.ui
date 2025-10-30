@@ -346,8 +346,14 @@
                 <property name="text">
                  <string>Launch Dolphin on play</string>
                 </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
                 <attribute name="buttonGroup">
-                 <string notr="true">buttonGroup</string>
+                 <string notr="true">launchRadioButtonGroup</string>
                 </attribute>
                </widget>
               </item>
@@ -357,7 +363,7 @@
                  <string>Launch Game on play</string>
                 </property>
                 <attribute name="buttonGroup">
-                 <string notr="true">buttonGroup</string>
+                 <string notr="true">launchRadioButtonGroup</string>
                 </attribute>
                </widget>
               </item>
@@ -599,6 +605,6 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
+  <buttongroup name="launchRadioButtonGroup"/>
  </buttongroups>
 </ui>
