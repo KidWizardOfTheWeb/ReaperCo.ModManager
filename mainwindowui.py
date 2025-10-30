@@ -1,15 +1,48 @@
 import os
 import sys
+import time
+
+import threading
+import richpresence
 
 from mainwindowfunc import * # Contains our functionality so we can read this file properly
 from constants import * # Contains our paths
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6.QtCore import QRunnable, pyqtSlot, QThreadPool
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QComboBox, QVBoxLayout, QWidget, QLineEdit, \
     QDialog
 
-from modfileutils import merge_mod_dbs
 from reordermodsui import ReorderModsWindow
+from addmodui import AddModWindow
 
+
+
+
+# This class will handle our multithreading
+# We've come far enough in python work that we need to multithread it, be proud
+
+class Worker(QRunnable):
+    """Worker thread.
+
+    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+
+    :param callback: The function callback to run on this worker thread.
+                     Supplied args and kwargs will be passed through to the runner.
+    :type callback: function
+    :param args: Arguments to pass to the callback function
+    :param kwargs: Keywords to pass to the callback function
+    """
+
+    def __init__(self, fn, *args, **kwargs):
+        super().__init__()
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+
+    @pyqtSlot()
+    def run(self):
+        """Initialise the runner function with passed args, kwargs."""
+        self.fn(*self.args, **self.kwargs)
 
 # load our main window and hook all behaviors/connections to other windows here
 # Functions attached to buttons should be in another file for readability
@@ -18,7 +51,17 @@ class MainWindow(QMainWindow):
         super().__init__()
         # Load mainwindow file
         uic.loadUi(os.path.join(UI_FOLDER_PATH, 'mainwindow.ui'), self)
+
+        # This does technically start a thread, but you can never update the thread... which sucks
+        client_id = "1432755181598150908"
+        # Init thread in window to access later?
+        RPC_Thread = threading.Thread(name="discord-RPC", target=richpresence.RPC_loop(client_id), daemon=True)
+        RPC_Thread.start()
+
         # ATTACH ALL BUTTON BEHAVIOR IN HERE
+
+        # THREAD POOL
+        self.threadpool = QThreadPool()
 
         # DIR PLAIN TEXT SETUP
         self.modsDirPathField.setPlainText(get_config_option(SETTINGS_INI,
@@ -49,6 +92,7 @@ class MainWindow(QMainWindow):
         self.currentGameCombobox.activated.connect(self.game_combo_box_option_select)
 
         # BOTTOM ROW OF BUTTONS
+        self.addModButton.clicked.connect(self.create_mod)
         self.refreshListButton.clicked.connect(self.refresh_modsUI)
 
         # SAVE BUTTONS
@@ -76,6 +120,30 @@ class MainWindow(QMainWindow):
         print("Loaded " + str(len(mod_entries)) + " mods.\n")
 
     # FUNCTIONS
+
+    # Adds mods
+    def create_mod(self):
+        create_window = AddModWindow()
+        if create_window.exec():
+            # Get ALL relevant details from window here, create new mod dirs as needed
+
+            new_mod_data = {
+                "Mod Title": create_window.modTitleBox.toPlainText(),
+                "Description": create_window.descBox.toPlainText(),
+                "Version": create_window.versionBox.toPlainText(),
+                "Author": create_window.authorBox.toPlainText(),
+                "Create Sys": create_window.createSysCheckbox.isChecked(),
+                "Create Files": create_window.createFilesCheckbox.isChecked(),
+                "Open Folder": create_window.openFolderCheckbox.isChecked()
+            }
+
+            create_mod_processing(new_mod_data, self.currentGameCombobox.currentText())
+            self.refresh_modsUI()
+            return
+
+        # If cancelled, don't save.
+
+        pass
 
     # Handles text display for info
     def set_modbox_title(self, text):

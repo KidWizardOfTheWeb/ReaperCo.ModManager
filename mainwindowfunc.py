@@ -8,7 +8,8 @@ from PyQt6 import QtCore
 
 from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, DB_INI, MOD_ISO_DIR, DOLPHIN_EXE
 from filemanagerutils import get_config_option, set_config_option, generate_modsDB_ini
-from modfileutils import generate_file_DB_for_mod, set_modsDB, get_modsDB, merge_mod_dbs, move_mod_files_to_final_place
+from modfileutils import generate_file_DB_for_mod, set_modsDB, get_modsDB, merge_mod_dbs, move_mod_files_to_final_place, \
+    create_mod_dirs
 import subprocess
 from pathlib import Path, PurePath, WindowsPath
 
@@ -222,7 +223,10 @@ def enable_mod(game_title, mod_title):
     # path_to_db = os.path.join(Path(mod_found_path), Path(DB_INI))
 
     # Generates the JSON file (db.json)
-    generate_file_DB_for_mod(mod_found_path, mod_found_path)
+
+    # NOTE: This used to be active, but caused long load times/GUI freezes when checking large mods.
+    # Now all DBs are calculated on the save function
+    # generate_file_DB_for_mod(mod_found_path, mod_found_path)
 
     # Load this file as a dict and merge it with the dict in the mod folder
     # with open(os.path.join(mod_found_path, "db.json"), "r") as file:
@@ -277,7 +281,7 @@ def disable_mod(game_title, mod_title):
     # Get GUID and path to this particular mod
     mod_GUID, mod_found_path, game_mod_dir = match_mod(game_title, mod_title)
 
-    path_to_mods_db = os.path.join(game_mod_dir, MODSDB_INI)
+    # path_to_mods_db = os.path.join(game_mod_dir, MODSDB_INI)
 
     # Find said mod in modsDB.ini by searching for all "activemodX" keys and matching to value.
     main_sect_keys = get_config_option(MODSDB_INI,
@@ -421,9 +425,29 @@ def start_dolphin_game(game_title):
     path_to_dolphin_exe = os.path.join(Path(path_to_dolphin), Path(DOLPHIN_EXE))
 
     try:
-        dolphin_proc = subprocess.Popen([path_to_dolphin_exe, "-e", path_to_game_dol],
+        dolphin_proc = subprocess.Popen([path_to_dolphin_exe, "-e", path_to_game_dol, "-b"],
                                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
         return
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}")
         return
+
+
+def create_mod_processing(new_mod_data, game_title):
+    game_dict = get_config_option(SETTINGS_INI, "config", "GameList", return_keys=True, return_values=True)
+
+    # Match the key-value to current_game
+    if not game_dict:
+        return ["No mods. Open a game and add one!"]
+
+    gameID = game_dict[game_title]
+
+    # Search the main mod directory for the main folder for this game
+    game_mod_dir = get_config_option(SETTINGS_INI, "config", "LauncherLoader", "modsdir")
+    game_mod_dir = os.path.join(Path(game_mod_dir), gameID)
+
+    # Get the modsDB.ini file and check/add to mods section
+    path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID), Path(new_mod_data["Mod Title"])))
+
+    create_mod_dirs(new_mod_data, path_to_mods_folder)
+    pass

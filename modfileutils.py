@@ -55,6 +55,10 @@ def set_modsDB(modsDB_data, path_to_gamemod_folder, gameID=None):
         if path_of_mod in stored_mods and not has_no_mods:
             continue
 
+        # Check if this is actually a directory (zip files should NOT proc here)
+        if not os.path.isdir(path_of_mod):
+            continue
+        # Write to our stored mods
         set_config_option(MODSDB_INI,
                           path_to_config=path_to_gamemod_folder,
                           section_to_write="Mods",
@@ -319,5 +323,24 @@ def move_mod_files_to_final_place(mod_iso_db):
             shutil.copy(filedata[0], new_directory)
             pass
         pass
+    pass
 
+def create_mod_dirs(new_mod_data, path_to_add):
+    try:
+        os.mkdir(path_to_add)
+        if new_mod_data["Create Sys"]:
+            sys_path = os.path.join(path_to_add, Path("sys"))
+            os.mkdir(sys_path)
+        if new_mod_data["Create Files"]:
+            files_path = os.path.join(path_to_add, Path("files"))
+            os.mkdir(files_path)
+        if new_mod_data["Open Folder"]:
+            os.startfile(path_to_add)
+
+    except FileExistsError:
+        print("Mod already exists!")
+        pass
+    except FileNotFoundError:
+        print("Path is incorrect!")
+        pass
     pass
