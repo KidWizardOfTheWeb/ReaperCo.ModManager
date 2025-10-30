@@ -424,8 +424,9 @@ def start_dolphin_game(game_title):
     # get dolphin location, subproc and detach
     path_to_dolphin_exe = os.path.join(Path(path_to_dolphin), Path(DOLPHIN_EXE))
 
+    # , "-b"
     try:
-        dolphin_proc = subprocess.Popen([path_to_dolphin_exe, "-e", path_to_game_dol, "-b"],
+        dolphin_proc = subprocess.Popen([path_to_dolphin_exe, "-e", path_to_game_dol],
                                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
         return
     except subprocess.CalledProcessError as e:
