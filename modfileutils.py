@@ -129,6 +129,12 @@ def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None):
 
         if (inFilesPath or inSysPath):
             for filename in filenames:
+                # IF ON WINDOWS, THIS FILE SHOULD NOT BE ADDED
+                # Thanks, windows configs...
+                # For context, windows generates this IN FOLDER if the view settings for the folder are changed
+                if filename == "desktop.ini":
+                    continue
+
                 # Original location to return to
                 fileLoc = os.path.join(dirpath, filename)
 
