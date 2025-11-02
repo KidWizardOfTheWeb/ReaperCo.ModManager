@@ -14,7 +14,7 @@ from filemanagerutils import get_config_option, set_config_option
 
 
 # Takes in the modsDB file, adds to the file as needed
-def set_modsDB(modsDB_data, path_to_gamemod_folder, gameID=None):
+def set_modsDB(modsDB_data, path_to_gamemod_folder, gameID=None, mods_to_remove=None):
     # Any and all mods should be appended here if they do not already exist
     configdata = configparser.ConfigParser()
     configdata.read(modsDB_data)
@@ -70,6 +70,15 @@ def set_modsDB(modsDB_data, path_to_gamemod_folder, gameID=None):
     # But if a mod is created locally, might be necessary for that case...
     # At least, add a blank one I'd think
     # NOTE: any files are safe to put w/ sys-files setup as long as it doesn't breach entry into either folder (i.e. stays at the root above them)
+
+    # If there are mods to remove, do it here
+    if mods_to_remove:
+        for removal_guid in mods_to_remove:
+            set_config_option(MODSDB_INI,
+                              path_to_config=path_to_gamemod_folder,
+                              section_to_write="Mods",
+                              option_to_write=removal_guid,
+                              clear_option=True)
     pass
 
 def get_modsDB(modsDB_data, path_to_gamemod_folder, return_full_path=False, return_guids=False):

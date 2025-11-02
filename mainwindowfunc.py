@@ -37,22 +37,22 @@ def populate_modlist(current_game):
     while True:
         try:
             set_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, gameID=gameID)
-            list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir)
+            list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, return_guids=True)
             break
         except:
             print("No modsDB.ini found for game! Generating and attempting to add mods...")
             generate_modsDB_ini(path_to_mods_db)
 
-    # Regen DB if a folder does not exist
+    # Remove nonexistent mods that no longer exist
     for mod in list_of_mods:
-        mod_to_test = os.path.join(path_to_mods_folder, Path(mod))
+        mod_to_test = os.path.join(path_to_mods_folder, Path(list(mod.values())[0]))
         if not os.path.exists(mod_to_test):
-            generate_modsDB_ini(path_to_mods_db, force_overwrite=True)
-            set_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, gameID=gameID)
-            list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir)
-            # Don't need to do this for every one of them since this checks all of them, just break the first time you see it
-            break
+            # If the path doesn't exist, just remove the entry
+            set_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, gameID=gameID, mods_to_remove=list(mod.keys()))
+            # Make sure to remove from active mods list and fix active mods list too
+            disable_mod(game_title=current_game, mod_title=list(mod.values())[0], game_mod_dir_override=game_mod_dir, GUID_override=list(mod.keys())[0])
 
+    list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir)
     print("Loading " + str(len(list_of_mods)) + " mods...")
 
     return list_of_mods
@@ -277,9 +277,17 @@ def save_mods_to_modded_game(active_mods, game_title):
     print("Saved " + str(len(active_mods)) + " to the database.\n")
 
 
-def disable_mod(game_title, mod_title):
-    # Get GUID and path to this particular mod
-    mod_GUID, mod_found_path, game_mod_dir = match_mod(game_title, mod_title)
+def disable_mod(game_title, mod_title, game_mod_dir_override=None, GUID_override=None):
+    # Get GUID and path to this particular mod if we don't already supply this
+    if not game_mod_dir_override or not GUID_override:
+        mod_GUID, mod_found_path, game_mod_dir = match_mod(game_title, mod_title)
+
+    # THESE TWO MUST BE USED IN TANDEM
+    if game_mod_dir_override:
+        game_mod_dir = game_mod_dir_override
+
+    if GUID_override:
+        mod_GUID = GUID_override
 
     # path_to_mods_db = os.path.join(game_mod_dir, MODSDB_INI)
 

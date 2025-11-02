@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Removed PyQt5 from reqs, now only has PyQt6 required">
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Fixed windows bug that added the secret desktop.ini config to the modpacks">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modfileutils.py" beforeDir="false" afterPath="$PROJECT_DIR$/modfileutils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +50,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.MainRun.executor": "Debug",
+    "Python.MainRun.executor": "Run",
     "Python.filehashutils.executor": "Run",
     "Python.main.executor": "Debug",
     "Python.mainwindowui.executor": "Run",
@@ -247,7 +246,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761851675441</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Fixed windows bug that added the secret desktop.ini config to the modpacks">
+      <option name="closed" value="true" />
+      <created>1761959915380</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1761959915380</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -276,14 +283,15 @@
     <MESSAGE value="Updated requirements.txt" />
     <MESSAGE value="Launch settings added, can now start with or without dolphin launcher active" />
     <MESSAGE value="Removed PyQt5 from reqs, now only has PyQt6 required" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed PyQt5 from reqs, now only has PyQt6 required" />
+    <MESSAGE value="Fixed windows bug that added the secret desktop.ini config to the modpacks" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed windows bug that added the secret desktop.ini config to the modpacks" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/modfileutils.py</url>
-          <line>194</line>
+          <line>196</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -298,7 +306,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/modfileutils.py</url>
-          <line>271</line>
+          <line>273</line>
           <option name="timeStamp" value="67" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -323,7 +331,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/modfileutils.py</url>
-          <line>133</line>
+          <line>134</line>
           <option name="timeStamp" value="112" />
         </line-breakpoint>
       </breakpoints>
