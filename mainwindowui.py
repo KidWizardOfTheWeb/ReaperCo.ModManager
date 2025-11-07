@@ -55,8 +55,12 @@ class MainWindow(QMainWindow):
         # This does technically start a thread, but you can never update the thread... which sucks
         client_id = "1432755181598150908"
         # Init thread in window to access later?
-        RPC_Thread = threading.Thread(name="discord-RPC", target=richpresence.RPC_loop(client_id), daemon=True)
-        RPC_Thread.start()
+        try:
+            RPC_Thread = threading.Thread(name="discord-RPC", target=richpresence.RPC_loop(client_id), daemon=True)
+            RPC_Thread.start()
+        except Exception as e:
+            print("Discord not found. Skipping rich presence...")
+
 
         # ATTACH ALL BUTTON BEHAVIOR IN HERE
 
@@ -265,6 +269,8 @@ class MainWindow(QMainWindow):
     def set_directory(self):
         sent_button = self.sender()
         if sent_button == self.modsDirToolbutton:
+            print("We are about to set up modsdir.\n") # Currently crashing right after this on macOS.
+            print(f"modsDirPathField is {self.modsDirPathField}")
             self.modsDirPathField.setPlainText(set_up_directory('modsdir'))
         elif sent_button == self.dolphinDirToolbutton:
             self.dolphinDirPathField.setPlainText(set_up_directory('dolphindir'))
