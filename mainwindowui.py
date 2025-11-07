@@ -252,16 +252,30 @@ class MainWindow(QMainWindow):
     def open_directory(self):
         sent_button = self.sender()
         if sent_button == self.openModsPushbutton:
-            os.startfile(get_config_option(SETTINGS_INI,
-                                           "config",
-                                           "LauncherLoader",
-                                           "modsdir"))
+            if sys.platform == "win32":
+                os.startfile(get_config_option(SETTINGS_INI,
+                                            "config",
+                                            "LauncherLoader",
+                                            "modsdir"))
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, get_config_option(SETTINGS_INI,
+                                            "config",
+                                            "LauncherLoader",
+                                            "modsdir")])
 
         if sent_button == self.openDolphinPushbutton:
-            os.startfile(get_config_option(SETTINGS_INI,
-                                           "config",
-                                           "LauncherLoader",
-                                           "dolphindir"))
+            if sys.platform == "win32":
+                os.startfile(get_config_option(SETTINGS_INI,
+                                            "config",
+                                            "LauncherLoader",
+                                            "dolphindir"))
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, get_config_option(SETTINGS_INI,
+                                            "config",
+                                            "LauncherLoader",
+                                            "dolphindir")])
         pass
 
 
@@ -271,7 +285,9 @@ class MainWindow(QMainWindow):
         if sent_button == self.modsDirToolbutton:
             print("We are about to set up modsdir.\n") # Currently crashing right after this on macOS.
             print(f"modsDirPathField is {self.modsDirPathField}")
-            self.modsDirPathField.setPlainText(set_up_directory('modsdir'))
+            plaintext = set_up_directory('modsdir')
+            print("See if we got here.")
+            self.modsDirPathField.setPlainText(plaintext)
         elif sent_button == self.dolphinDirToolbutton:
             self.dolphinDirPathField.setPlainText(set_up_directory('dolphindir'))
         elif sent_button == self.texturesDirToolbutton:

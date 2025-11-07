@@ -350,7 +350,12 @@ def create_mod_dirs(new_mod_data, path_to_add):
             files_path = os.path.join(path_to_add, Path("files"))
             os.mkdir(files_path)
         if new_mod_data["Open Folder"]:
-            os.startfile(path_to_add)
+            if sys.platform == "win32":
+                os.startfile(path_to_add)
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, path_to_add])
+            
 
     except FileExistsError:
         print("Mod already exists!")

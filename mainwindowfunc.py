@@ -162,9 +162,14 @@ def add_new_game_from_dolphin():
     return gameID, gameTitle
 
 def set_up_directory(directory_option):
-    tkinter.Tk().withdraw()  # prevents an empty tkinter window from appearing
+    print("I think tk withdraw is failing. Check it.")
+    root = tkinter.Tk()
+    root.withdraw() # Prevents an empty tkinter window from appearing
+    # tkinter.Tk().withdraw()  # prevents an empty tkinter window from appearing
     # Return file selected
+    print("Are we at askdirectory?")
     path_to_directory = filedialog.askdirectory()
+    print("Are we past askdirectory?")
     set_config_option(SETTINGS_INI,
                       path_to_config=os.path.join(os.getcwd(), "config"),
                       section_to_write="LauncherLoader",
