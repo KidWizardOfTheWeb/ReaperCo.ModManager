@@ -10,7 +10,7 @@ from constants import * # Contains our paths
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QRunnable, pyqtSlot, QThreadPool
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QComboBox, QVBoxLayout, QWidget, QLineEdit, \
-    QDialog
+    QFileDialog
 
 from reordermodsui import ReorderModsWindow
 from addmodui import AddModWindow
@@ -283,15 +283,15 @@ class MainWindow(QMainWindow):
     def set_directory(self):
         sent_button = self.sender()
         if sent_button == self.modsDirToolbutton:
-            print("We are about to set up modsdir.\n") # Currently crashing right after this on macOS.
-            print(f"modsDirPathField is {self.modsDirPathField}")
-            plaintext = set_up_directory('modsdir')
-            print("See if we got here.")
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Mod Directory", directory="~", options=QFileDialog.Option.ShowDirsOnly)
+            plaintext = set_up_directory(path_to_directory, 'modsdir')
             self.modsDirPathField.setPlainText(plaintext)
         elif sent_button == self.dolphinDirToolbutton:
-            self.dolphinDirPathField.setPlainText(set_up_directory('dolphindir'))
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Dolphin Directory", directory="~", options=QFileDialog.Option.ShowDirsOnly)
+            self.dolphinDirPathField.setPlainText(set_up_directory(path_to_directory, 'dolphindir'))
         elif sent_button == self.texturesDirToolbutton:
-            self.texturesDirPathField.setPlainText(set_up_directory('texturesdir'))
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Textures Directory", directory="~", options=QFileDialog.Option.ShowDirsOnly)
+            self.texturesDirPathField.setPlainText(set_up_directory(path_to_directory, 'texturesdir'))
         pass
 
 
@@ -299,7 +299,8 @@ class MainWindow(QMainWindow):
     def game_combo_box_option_select(self):
         selected_item = self.currentGameCombobox.currentText()
         if selected_item == "Add new game here":
-            gameID, gameTitle = add_new_game_from_dolphin()
+            path_to_new_game = QFileDialog.getOpenFileName(self, caption="Select Game", directory="~", filter="Games (*.iso)")
+            gameID, gameTitle = add_new_game_from_dolphin(path_to_new_game[0])
 
             if gameID is None and gameTitle is None:
                 return

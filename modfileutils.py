@@ -8,7 +8,7 @@ import shutil
 import hashlib
 import uuid
 import tkinter
-from tkinter import filedialog
+# from tkinter import filedialog
 from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, ORIGINAL_ISO_DIR, MOD_ISO_DIR
 from filemanagerutils import get_config_option, set_config_option
 

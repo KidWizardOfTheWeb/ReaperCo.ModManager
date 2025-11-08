@@ -1,10 +1,11 @@
 import os.path
 import json
-import tkinter
-from tkinter import filedialog
+import sys
+# import tkinter
+# from tkinter import filedialog
 import shutil
 
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtWidgets
 
 from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, DB_INI, MOD_ISO_DIR, DOLPHIN_EXE
 from filemanagerutils import get_config_option, set_config_option, generate_modsDB_ini
@@ -12,6 +13,23 @@ from modfileutils import generate_file_DB_for_mod, set_modsDB, get_modsDB, merge
     create_mod_dirs
 import subprocess
 from pathlib import Path, PurePath, WindowsPath
+
+def check_paths():
+    path_to_dolphin = get_config_option(SETTINGS_INI,
+                                        "config",
+                                          "LauncherLoader",
+                                          "dolphindir")
+    path_to_mods = get_config_option(SETTINGS_INI,
+                                     "config",
+                                       "LauncherLoader",
+                                       "modsdir")
+
+    if not path_to_dolphin and not path_to_mods:
+        # Error window here, print what's missing, end function
+        print("Error here! Path to dolphin or path to mods missing.")
+        return None, None
+    
+    return path_to_dolphin, path_to_mods
 
 # Get all mods, add then to modsDB, populate list with 'em
 def populate_modlist(current_game):
@@ -70,30 +88,35 @@ def update_gamelist_combobox():
 
 
 # Allows users to add a new game from dolphin, provided it's an ISO (other file supports coming later)
-def add_new_game_from_dolphin():
+def add_new_game_from_dolphin(path_to_new_game):
     # Check if a path to dolphin and the mods dir is set first
 
-    path_to_dolphin = get_config_option(SETTINGS_INI,
-                                        "config",
-                                          "LauncherLoader",
-                                          "dolphindir")
-    path_to_mods = get_config_option(SETTINGS_INI,
-                                     "config",
-                                       "LauncherLoader",
-                                       "modsdir")
+    path_to_dolphin, path_to_mods = check_paths()
+
+    # path_to_dolphin = get_config_option(SETTINGS_INI,
+    #                                     "config",
+    #                                       "LauncherLoader",
+    #                                       "dolphindir")
+    # path_to_mods = get_config_option(SETTINGS_INI,
+    #                                  "config",
+    #                                    "LauncherLoader",
+    #                                    "modsdir")
 
     if not path_to_dolphin and not path_to_mods:
-        # Error window here, print what's missing, end function
-        print("Error here! Path to dolphin or path to mods missing.")
+    #     # Error window here, print what's missing, end function
+    #     print("Error here! Path to dolphin or path to mods missing.")
         return
 
 
-    # Open file dialog from here
-    tkinter.Tk().withdraw()  # prevents an empty tkinter window from appearing
+    # Open file dialog from 
+    # root = tkinter.Tk()
+    # root.withdraw()  # prevents an empty tkinter window from appearing
 
     # Return dol file selected
     # path_to_new_game = Path(filedialog.askopenfilename())
-    path_to_new_game = filedialog.askopenfilename()
+    # The original function
+    # path_to_new_game = filedialog.askopenfilename()
+    # root.withdraw()
 
     if not path_to_new_game:
         return None, None
@@ -161,15 +184,10 @@ def add_new_game_from_dolphin():
 
     return gameID, gameTitle
 
-def set_up_directory(directory_option):
-    print("I think tk withdraw is failing. Check it.")
-    root = tkinter.Tk()
-    root.withdraw() # Prevents an empty tkinter window from appearing
+def set_up_directory(path_to_directory, directory_option):
     # tkinter.Tk().withdraw()  # prevents an empty tkinter window from appearing
     # Return file selected
-    print("Are we at askdirectory?")
-    path_to_directory = filedialog.askdirectory()
-    print("Are we past askdirectory?")
+    # path_to_directory = filedialog.askdirectory()
     set_config_option(SETTINGS_INI,
                       path_to_config=os.path.join(os.getcwd(), "config"),
                       section_to_write="LauncherLoader",
@@ -367,7 +385,6 @@ def get_enabled_mods(game_title, mod_title, return_titles=False):
     # Get all relevant data by matching current item to the mod needed
     if game_title == "Add new game here":
         return QtCore.Qt.CheckState.Unchecked
-
     mod_GUID, mod_found_path, game_mod_dir = match_mod(game_title, mod_title)
 
     # Get all active mod keys
@@ -401,18 +418,11 @@ def get_enabled_mods(game_title, mod_title, return_titles=False):
 
 
 def start_dolphin_game(game_title):
-    path_to_dolphin = get_config_option(SETTINGS_INI,
-                                        "config",
-                                        "LauncherLoader",
-                                        "dolphindir")
-    path_to_mods = get_config_option(SETTINGS_INI,
-                                     "config",
-                                     "LauncherLoader",
-                                     "modsdir")
+    path_to_dolphin, path_to_mods = check_paths()
 
     if not path_to_dolphin and not path_to_mods:
         # Error window here, print what's missing, end function
-        print("Error here! Path to dolphin or path to mods missing.")
+        # print("Error here! Path to dolphin or path to mods missing.")
         return
 
 
@@ -450,8 +460,11 @@ def start_dolphin_game(game_title):
         params = [path_to_dolphin_exe, "-e", path_to_game_dol, "-b"]
 
     try:
-        dolphin_proc = subprocess.Popen(params,
-                               creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+        if sys.platform == "win32":
+            dolphin_proc = subprocess.Popen(params,
+                                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+        else:
+            dolphin_proc = subprocess.Popen(params, shell=True)
         return
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}")

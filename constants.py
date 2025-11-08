@@ -10,7 +10,7 @@ if platform == "win32": #Windows
     DOLPHIN_EXE = "dolphin.exe"
     DOLPHIN_TOOL = "dolphintool.exe"
 elif platform == "darwin": #MacOS
-    DOLPHIN_EXE = "Dolphin.app"
+    DOLPHIN_EXE = "Dolphin.app/Contents/MacOS/Dolphin"
     DOLPHIN_TOOL = "dolphin-tool"
 elif platform == "linux": #Linux
     DOLPHIN_EXE = "" #uhhh idk how to handle the flatpak values yet.
