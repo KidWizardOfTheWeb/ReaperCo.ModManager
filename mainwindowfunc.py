@@ -455,16 +455,17 @@ def start_dolphin_game(game_title):
 
     params = []
     if play_behavior == 0:
-        params = [path_to_dolphin_exe, "-e", path_to_game_dol]
+        params = [path_to_dolphin_exe, "-e", f"{path_to_game_dol}"]
     elif play_behavior == 1:
-        params = [path_to_dolphin_exe, "-e", path_to_game_dol, "-b"]
+        params = [path_to_dolphin_exe, "-e", f"{path_to_game_dol}", "-b"]
 
+    print(params)
     try:
         if sys.platform == "win32":
             dolphin_proc = subprocess.Popen(params,
                                 creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
         else:
-            dolphin_proc = subprocess.Popen(params, shell=True)
+            dolphin_proc = subprocess.Popen(params)
         return
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}")
