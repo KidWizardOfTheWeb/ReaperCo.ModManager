@@ -24,7 +24,7 @@ def check_paths():
                                        "LauncherLoader",
                                        "modsdir")
 
-    if not path_to_dolphin and not path_to_mods:
+    if not path_to_dolphin or not path_to_mods:
         # Error window here, print what's missing, end function
         print("Error here! Path to dolphin or path to mods missing.")
         return None, None
@@ -102,7 +102,7 @@ def add_new_game_from_dolphin(path_to_new_game):
     #                                    "LauncherLoader",
     #                                    "modsdir")
 
-    if not path_to_dolphin and not path_to_mods:
+    if not path_to_dolphin or not path_to_mods:
     #     # Error window here, print what's missing, end function
     #     print("Error here! Path to dolphin or path to mods missing.")
         return
@@ -420,7 +420,7 @@ def get_enabled_mods(game_title, mod_title, return_titles=False):
 def start_dolphin_game(game_title):
     path_to_dolphin, path_to_mods = check_paths()
 
-    if not path_to_dolphin and not path_to_mods:
+    if not path_to_dolphin or not path_to_mods:
         # Error window here, print what's missing, end function
         # print("Error here! Path to dolphin or path to mods missing.")
         return
