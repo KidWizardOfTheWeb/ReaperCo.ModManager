@@ -283,14 +283,14 @@ class MainWindow(QMainWindow):
     def set_directory(self):
         sent_button = self.sender()
         if sent_button == self.modsDirToolbutton:
-            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Mod Directory", directory="~", options=QFileDialog.Option.ShowDirsOnly)
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Mod Directory", options=QFileDialog.Option.ShowDirsOnly)
             plaintext = set_up_directory(path_to_directory, 'modsdir')
             self.modsDirPathField.setPlainText(plaintext)
         elif sent_button == self.dolphinDirToolbutton:
-            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Dolphin Directory", directory="~", options=QFileDialog.Option.ShowDirsOnly)
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Dolphin Directory", options=QFileDialog.Option.ShowDirsOnly)
             self.dolphinDirPathField.setPlainText(set_up_directory(path_to_directory, 'dolphindir'))
         elif sent_button == self.texturesDirToolbutton:
-            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Textures Directory", directory="~", options=QFileDialog.Option.ShowDirsOnly)
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Textures Directory", options=QFileDialog.Option.ShowDirsOnly)
             self.texturesDirPathField.setPlainText(set_up_directory(path_to_directory, 'texturesdir'))
         pass
 
@@ -299,7 +299,7 @@ class MainWindow(QMainWindow):
     def game_combo_box_option_select(self):
         selected_item = self.currentGameCombobox.currentText()
         if selected_item == "Add new game here":
-            path_to_new_game = QFileDialog.getOpenFileName(self, caption="Select Game", directory="~", filter="Games (*.iso)")
+            path_to_new_game = QFileDialog.getOpenFileName(self, caption="Select Game", filter="Games (*.iso)")
             gameID, gameTitle = add_new_game_from_dolphin(path_to_new_game[0])
 
             if gameID is None and gameTitle is None:
