@@ -300,7 +300,12 @@ class MainWindow(QMainWindow):
         selected_item = self.currentGameCombobox.currentText()
         if selected_item == "Add new game here":
             path_to_new_game = QFileDialog.getOpenFileName(self, caption="Select Game", filter="Games (*.iso)")
-            gameID, gameTitle = add_new_game_from_dolphin(path_to_new_game[0])
+            try:
+                gameID, gameTitle = add_new_game_from_dolphin(path_to_new_game[0])
+            except Exception as e:
+                print("No file selected. Please select a game.")
+                gameID = None
+                gameTitle = None
 
             if gameID is None and gameTitle is None:
                 return

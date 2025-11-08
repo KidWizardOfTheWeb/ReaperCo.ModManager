@@ -54,10 +54,13 @@ def populate_modlist(current_game):
 
     while True:
         try:
+            print(f"set_modsDB(modsDB_data={path_to_mods_db}, path_to_gamemod_folder={game_mod_dir}, gameID={gameID})")
             set_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, gameID=gameID)
+            print("Is this the point?")
             list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, return_guids=True)
             break
-        except:
+        except Exception as e:
+            print(f"Caught exception {e}")
             print("No modsDB.ini found for game! Generating and attempting to add mods...")
             generate_modsDB_ini(path_to_mods_db)
 
@@ -130,7 +133,10 @@ def add_new_game_from_dolphin(path_to_new_game):
     gameID = ""
     gameTitle = ""
     try:
-        ans = subprocess.check_output([path_to_dolphintool, "header", "-i", path_to_new_game], text=True)
+        if sys.platform == "linux":
+            ans = subprocess.check_output(["flatpak", "run", DOLPHIN_TOOL, DOLPHIN_EXE, "header", "-i", path_to_new_game], text=True)
+        else:
+            ans = subprocess.check_output([path_to_dolphintool, "header", "-i", path_to_new_game], text=True)
         print(ans)
         gameID = ans.split()[7]  # Returns gameID from output
         gameTitle = ans.split()[2] # Returns gameTitle from output
@@ -151,7 +157,11 @@ def add_new_game_from_dolphin(path_to_new_game):
 
     # using dolphintool, extract entire disc to the ISO folder
     extract_iso_path = os.path.join(new_mod_dir, Path(gameID + dirs_to_make[1]))
-    ans = subprocess.check_output([path_to_dolphintool, "extract", "-i", path_to_new_game, "-o", extract_iso_path], text=True)
+    # Linux must use flatpak command, check for that first.
+    if sys.platform == "linux":
+        ans = subprocess.check_output(["flatpak", "run", DOLPHIN_TOOL, DOLPHIN_EXE, "extract", "-i", path_to_new_game, "-o", extract_iso_path], text=True)
+    else:
+        ans = subprocess.check_output([path_to_dolphintool, "extract", "-i", path_to_new_game, "-o", extract_iso_path], text=True)
 
     # Generate DB files for vanilla ISO
     # iso_db_path = os.path.join(new_mod_dir, Path("DBs"), Path(gameID + dirs_to_make[3]))
@@ -455,9 +465,15 @@ def start_dolphin_game(game_title):
 
     params = []
     if play_behavior == 0:
-        params = [path_to_dolphin_exe, "-e", f"{path_to_game_dol}"]
+        if sys.platform == "linux":
+            params = ["flatpak", "run", DOLPHIN_EXE, "-e", f"{path_to_game_dol}"]
+        else:
+            params = [path_to_dolphin_exe, "-e", f"{path_to_game_dol}"]
     elif play_behavior == 1:
-        params = [path_to_dolphin_exe, "-e", f"{path_to_game_dol}", "-b"]
+        if sys.platform == "linux":
+            params = ["flatpak", "run", DOLPHIN_EXE, "-e", f"{path_to_game_dol}", "-b"]
+        else:
+            params = [path_to_dolphin_exe, "-e", f"{path_to_game_dol}", "-b"]
 
     print(params)
     try:

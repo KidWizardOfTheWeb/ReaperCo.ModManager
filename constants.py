@@ -13,12 +13,12 @@ elif platform == "darwin": #MacOS
     DOLPHIN_EXE = "Dolphin.app/Contents/MacOS/Dolphin"
     DOLPHIN_TOOL = "dolphin-tool"
 elif platform == "linux": #Linux
-    DOLPHIN_EXE = "" #uhhh idk how to handle the flatpak values yet.
-    DOLPHIN_TOOL = ""
+    DOLPHIN_EXE = "org.DolphinEmu.dolphin-emu"
+    DOLPHIN_TOOL = "--command=dolphin-tool"
 SETTINGS_INI = "settings.ini"
 MODSDB_INI = "modsDB.ini"
 DB_INI = "db.ini"
 
 ORIGINAL_ISO_DIR = "{}_ISO"
 MOD_ISO_DIR = "{}_MOD"
-MOD_PACK_DIR = "{}_mods"
+MOD_PACK_DIR = "{}_Mods"
