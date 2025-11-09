@@ -84,15 +84,15 @@ class MainWindow(QMainWindow):
                                                                 "LauncherLoader",
                                                                 "dolphindir"))
 
-        self.texturesDirPathField.setPlainText(get_config_option(SETTINGS_INI,
+        self.pluginsDirPathField.setPlainText(get_config_option(SETTINGS_INI,
                                                                  "config",
                                                                  "LauncherLoader",
-                                                                 "texturesdir"))
+                                                                 "pluginsdir"))
 
         # DIR BUTTON SETUP
         self.dolphinDirToolbutton.clicked.connect(self.set_directory)
         self.modsDirToolbutton.clicked.connect(self.set_directory)
-        self.texturesDirToolbutton.clicked.connect(self.set_directory)
+        self.pluginsDirToolbutton.clicked.connect(self.set_directory)
         self.openModsPushbutton.clicked.connect(self.open_directory)
         self.openDolphinPushbutton.clicked.connect(self.open_directory)
 
@@ -227,6 +227,14 @@ class MainWindow(QMainWindow):
     def refresh_modsUI(self):
         # Check game title, then check mod entries for game
         mod_entries = populate_modlist(self.currentGameCombobox.currentText())
+
+        # If game isn't found, repopulate game list and remove from our settings.ini
+        if "INVALID_ENTRIES" in mod_entries:
+            self.currentGameCombobox.clear()
+            self.currentGameCombobox.addItems(update_gamelist_combobox())
+            self.refresh_modsUI() # Refresh one more time with the game at the top of the list before ending
+            return
+
         self.set_modbox_title("Loading " + str(len(mod_entries)) + " mods...")
         # print("Loading " + str(len(list_of_mods)) + " mods...")
 
@@ -289,9 +297,9 @@ class MainWindow(QMainWindow):
         elif sent_button == self.dolphinDirToolbutton:
             path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Dolphin Directory", options=QFileDialog.Option.ShowDirsOnly)
             self.dolphinDirPathField.setPlainText(set_up_directory(path_to_directory, 'dolphindir'))
-        elif sent_button == self.texturesDirToolbutton:
-            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Textures Directory", options=QFileDialog.Option.ShowDirsOnly)
-            self.texturesDirPathField.setPlainText(set_up_directory(path_to_directory, 'texturesdir'))
+        elif sent_button == self.pluginsDirToolbutton:
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Plugins Directory", options=QFileDialog.Option.ShowDirsOnly)
+            self.pluginsDirPathField.setPlainText(set_up_directory(path_to_directory, 'pluginsdir'))
         pass
 
 
@@ -303,7 +311,7 @@ class MainWindow(QMainWindow):
             try:
                 gameID, gameTitle = add_new_game_from_dolphin(path_to_new_game[0])
             except Exception as e:
-                print("No file selected. Please select a game.")
+                print("No file selected. Please select a game.\n")
                 gameID = None
                 gameTitle = None
 
@@ -315,6 +323,8 @@ class MainWindow(QMainWindow):
 
             if gameTitle.lower() not in AllItems:
                 # Add this game title to settings.ini, set box to new title
+                # gameTitle MUST BE ONE CONTINUOUS STRING TO WORK IN INI
+                gameTitle = gameTitle.replace(" ", "")
                 self.currentGameCombobox.insertItem(0, gameTitle.lower())
                 set_config_option(SETTINGS_INI,
                                   path_to_config=os.path.join(os.getcwd(), "config"),
@@ -323,6 +333,7 @@ class MainWindow(QMainWindow):
                                   new_value=gameID)
 
             self.currentGameCombobox.setCurrentText(gameTitle.lower())
+            self.refresh_modsUI()
         else:
             # Profile changed, update mod list here
             self.refresh_modsUI()

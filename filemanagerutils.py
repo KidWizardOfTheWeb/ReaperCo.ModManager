@@ -11,7 +11,7 @@ def generate_settings_ini(settings_ini):
     if sys.platform == "linux":
         config_data['LauncherLoader'] = {
             "ISODir": "",
-            "TexturesDir": "",
+            "PluginsDir": "",
             "ModsDir": "",
             "DolphinDir": "Do Not Set This",
             "SaveAndPlayBehavior": "0"
@@ -19,7 +19,7 @@ def generate_settings_ini(settings_ini):
     else:
         config_data['LauncherLoader'] = {
             "ISODir": "",
-            "TexturesDir": "",
+            "PluginsDir": "",
             "ModsDir": "",
             "DolphinDir": "",
             "SaveAndPlayBehavior": "0"

@@ -48,15 +48,20 @@ def populate_modlist(current_game):
     game_mod_dir = get_config_option(SETTINGS_INI, "config", "LauncherLoader", "modsdir")
     game_mod_dir = os.path.join(Path(game_mod_dir), gameID)
 
+    # Check if this game even exists (user can delete a game folder at some point in the middle of the process running)
+    # Very niche check but hey, someone's gonna trip it somehow someday
+    if not os.path.isdir(game_mod_dir):
+        return "INVALID_ENTRIES"
+
     # Get the modsDB.ini file and check/add to mods section
     path_to_mods_db = os.path.join(game_mod_dir, MODSDB_INI)
     path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID)))
 
     while True:
         try:
-            print(f"set_modsDB(modsDB_data={path_to_mods_db}, path_to_gamemod_folder={game_mod_dir}, gameID={gameID})")
+            # print(f"set_modsDB(modsDB_data={path_to_mods_db}, path_to_gamemod_folder={game_mod_dir}, gameID={gameID})")
             set_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, gameID=gameID)
-            print("Is this the point?")
+            # print("Is this the point?")
             list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, return_guids=True)
             break
         except Exception as e:
@@ -82,8 +87,29 @@ def populate_modlist(current_game):
 # Add games and always add "add game option" at the end
 def update_gamelist_combobox():
     # Read all games from settings.ini, only return values (the actual game titles)
-    # TODO: Remove games that do not actually exist.
-    game_list = get_config_option(SETTINGS_INI, "config","GameList", return_keys=True)
+    # game_list = get_config_option(SETTINGS_INI, "config","GameList", return_keys=True)
+
+    # Get keys (titles) and values (gameIDs)
+    game_list = get_config_option(SETTINGS_INI, "config","GameList", return_keys=True, return_values=True)
+
+    # Check if the games exist here. If they don't, remove from Settings_ini
+    path_to_games = get_config_option(SETTINGS_INI, "config","LauncherLoader", "modsdir")
+
+    # Python cannot do a loop like this and remove items at the same time, so do it in a second loop
+    remove_list = []
+    for title, gameID in game_list.items():
+        path_to_test = os.path.join(Path(path_to_games), gameID)
+        if not os.path.isdir(path_to_test):
+            remove_list.append(title)
+            pass
+
+    # If not a valid path, remove the entry from the dict and from settings
+    for game_to_remove in remove_list:
+        game_list.pop(game_to_remove)
+        set_config_option(SETTINGS_INI, "config","GameList", option_to_write=game_to_remove, clear_option=True)
+
+    # Convert back to list
+    game_list = list(game_list.keys())
 
     # Always add this at the end to allow user to add more
     game_list.append("Add new game here")
@@ -138,8 +164,10 @@ def add_new_game_from_dolphin(path_to_new_game):
         else:
             ans = subprocess.check_output([path_to_dolphintool, "header", "-i", path_to_new_game], text=True)
         print(ans)
-        gameID = ans.split()[7]  # Returns gameID from output
-        gameTitle = ans.split()[2] # Returns gameTitle from output
+        # Get all lines of response back
+        response_data = ans.splitlines()
+        _, gameTitle = response_data[0].split(": ") # Returns gameTitle from output
+        _, gameID = response_data[2].split(": ") # Returns gameID from output
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}")
         return

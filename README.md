@@ -36,7 +36,7 @@ py main.py
 4. In the settings tab, use the triple dot buttons to set your directories to the following:
 - **Mods Directory** - Set to the folder created in step 2.
 - **Dolphin Directory** - Set to the root of your Dolphin build (the folder where `dolphin.exe`/`dolphintool.exe` exists).
-- **Textures Directory** - WIP, non-functional for now. You can set this to your `User/Load/Textures` path in Dolphin for now if you want.
+- **Modules Directory** - WIP, non-functional for now. In the future, we will support external scripts being connected to RCMM for any purpose.
 
 <img width="789" height="363" alt="image" src="https://github.com/user-attachments/assets/a5e4dccf-2d26-43f1-8ff9-5138f19a3c46" />
 <br></br>
@@ -103,7 +103,7 @@ Turning mods on/off is as simple as choosing your game, clicking the checkboxes,
 <img width="592" height="666" alt="image" src="https://github.com/user-attachments/assets/d8187872-0b0d-4c82-92b6-bd372e3e1e46" />
 <br></br>
 
-3. Press the save button. If you have two or mods selected, this will open up a menu that will allow you to reorder your mods in terms of priority with drag/drop.
+3. Press the save button. If you have two or more selected, this will open up a menu that will allow you to reorder your mods in terms of priority with drag/drop.
 
 **You can skip this step by pressing "OK" if none of your mods have conflicting files, as this is for power users/mod priority fixes.** 
 

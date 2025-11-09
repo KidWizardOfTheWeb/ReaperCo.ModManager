@@ -22,3 +22,6 @@ DB_INI = "db.ini"
 ORIGINAL_ISO_DIR = "{}_ISO"
 MOD_ISO_DIR = "{}_MOD"
 MOD_PACK_DIR = "{}_Mods"
+
+# Support for extra script plugins coming later
+PLUGINS_DIR = "{}_Plugins"
