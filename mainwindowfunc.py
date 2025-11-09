@@ -1,10 +1,11 @@
 import os.path
 import json
-import tkinter
-from tkinter import filedialog
+import sys
+# import tkinter
+# from tkinter import filedialog
 import shutil
 
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtWidgets
 
 from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, DB_INI, MOD_ISO_DIR, DOLPHIN_EXE
 from filemanagerutils import get_config_option, set_config_option, generate_modsDB_ini
@@ -12,6 +13,23 @@ from modfileutils import generate_file_DB_for_mod, set_modsDB, get_modsDB, merge
     create_mod_dirs
 import subprocess
 from pathlib import Path, PurePath, WindowsPath
+
+def check_paths():
+    path_to_dolphin = get_config_option(SETTINGS_INI,
+                                        "config",
+                                          "LauncherLoader",
+                                          "dolphindir")
+    path_to_mods = get_config_option(SETTINGS_INI,
+                                     "config",
+                                       "LauncherLoader",
+                                       "modsdir")
+
+    if not path_to_dolphin or not path_to_mods:
+        # Error window here, print what's missing, end function
+        print("Error here! Path to dolphin or path to mods missing.")
+        return None, None
+    
+    return path_to_dolphin, path_to_mods
 
 # Get all mods, add then to modsDB, populate list with 'em
 def populate_modlist(current_game):
@@ -30,16 +48,24 @@ def populate_modlist(current_game):
     game_mod_dir = get_config_option(SETTINGS_INI, "config", "LauncherLoader", "modsdir")
     game_mod_dir = os.path.join(Path(game_mod_dir), gameID)
 
+    # Check if this game even exists (user can delete a game folder at some point in the middle of the process running)
+    # Very niche check but hey, someone's gonna trip it somehow someday
+    if not os.path.isdir(game_mod_dir):
+        return "INVALID_ENTRIES"
+
     # Get the modsDB.ini file and check/add to mods section
     path_to_mods_db = os.path.join(game_mod_dir, MODSDB_INI)
     path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID)))
 
     while True:
         try:
+            # print(f"set_modsDB(modsDB_data={path_to_mods_db}, path_to_gamemod_folder={game_mod_dir}, gameID={gameID})")
             set_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, gameID=gameID)
+            # print("Is this the point?")
             list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, return_guids=True)
             break
-        except:
+        except Exception as e:
+            print(f"Caught exception {e}")
             print("No modsDB.ini found for game! Generating and attempting to add mods...")
             generate_modsDB_ini(path_to_mods_db)
 
@@ -61,8 +87,29 @@ def populate_modlist(current_game):
 # Add games and always add "add game option" at the end
 def update_gamelist_combobox():
     # Read all games from settings.ini, only return values (the actual game titles)
-    # TODO: Remove games that do not actually exist.
-    game_list = get_config_option(SETTINGS_INI, "config","GameList", return_keys=True)
+    # game_list = get_config_option(SETTINGS_INI, "config","GameList", return_keys=True)
+
+    # Get keys (titles) and values (gameIDs)
+    game_list = get_config_option(SETTINGS_INI, "config","GameList", return_keys=True, return_values=True)
+
+    # Check if the games exist here. If they don't, remove from Settings_ini
+    path_to_games = get_config_option(SETTINGS_INI, "config","LauncherLoader", "modsdir")
+
+    # Python cannot do a loop like this and remove items at the same time, so do it in a second loop
+    remove_list = []
+    for title, gameID in game_list.items():
+        path_to_test = os.path.join(Path(path_to_games), gameID)
+        if not os.path.isdir(path_to_test):
+            remove_list.append(title)
+            pass
+
+    # If not a valid path, remove the entry from the dict and from settings
+    for game_to_remove in remove_list:
+        game_list.pop(game_to_remove)
+        set_config_option(SETTINGS_INI, "config","GameList", option_to_write=game_to_remove, clear_option=True)
+
+    # Convert back to list
+    game_list = list(game_list.keys())
 
     # Always add this at the end to allow user to add more
     game_list.append("Add new game here")
@@ -70,30 +117,35 @@ def update_gamelist_combobox():
 
 
 # Allows users to add a new game from dolphin, provided it's an ISO (other file supports coming later)
-def add_new_game_from_dolphin():
+def add_new_game_from_dolphin(path_to_new_game):
     # Check if a path to dolphin and the mods dir is set first
 
-    path_to_dolphin = get_config_option(SETTINGS_INI,
-                                        "config",
-                                          "LauncherLoader",
-                                          "dolphindir")
-    path_to_mods = get_config_option(SETTINGS_INI,
-                                     "config",
-                                       "LauncherLoader",
-                                       "modsdir")
+    path_to_dolphin, path_to_mods = check_paths()
 
-    if not path_to_dolphin and not path_to_mods:
-        # Error window here, print what's missing, end function
-        print("Error here! Path to dolphin or path to mods missing.")
+    # path_to_dolphin = get_config_option(SETTINGS_INI,
+    #                                     "config",
+    #                                       "LauncherLoader",
+    #                                       "dolphindir")
+    # path_to_mods = get_config_option(SETTINGS_INI,
+    #                                  "config",
+    #                                    "LauncherLoader",
+    #                                    "modsdir")
+
+    if not path_to_dolphin or not path_to_mods:
+    #     # Error window here, print what's missing, end function
+    #     print("Error here! Path to dolphin or path to mods missing.")
         return
 
 
-    # Open file dialog from here
-    tkinter.Tk().withdraw()  # prevents an empty tkinter window from appearing
+    # Open file dialog from 
+    # root = tkinter.Tk()
+    # root.withdraw()  # prevents an empty tkinter window from appearing
 
     # Return dol file selected
     # path_to_new_game = Path(filedialog.askopenfilename())
-    path_to_new_game = filedialog.askopenfilename()
+    # The original function
+    # path_to_new_game = filedialog.askopenfilename()
+    # root.withdraw()
 
     if not path_to_new_game:
         return None, None
@@ -107,10 +159,15 @@ def add_new_game_from_dolphin():
     gameID = ""
     gameTitle = ""
     try:
-        ans = subprocess.check_output([path_to_dolphintool, "header", "-i", path_to_new_game], text=True)
+        if sys.platform == "linux":
+            ans = subprocess.check_output(["flatpak", "run", DOLPHIN_TOOL, DOLPHIN_EXE, "header", "-i", path_to_new_game], text=True)
+        else:
+            ans = subprocess.check_output([path_to_dolphintool, "header", "-i", path_to_new_game], text=True)
         print(ans)
-        gameID = ans.split()[7]  # Returns gameID from output
-        gameTitle = ans.split()[2] # Returns gameTitle from output
+        # Get all lines of response back
+        response_data = ans.splitlines()
+        _, gameTitle = response_data[0].split(": ") # Returns gameTitle from output
+        _, gameID = response_data[2].split(": ") # Returns gameID from output
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}")
         return
@@ -128,7 +185,11 @@ def add_new_game_from_dolphin():
 
     # using dolphintool, extract entire disc to the ISO folder
     extract_iso_path = os.path.join(new_mod_dir, Path(gameID + dirs_to_make[1]))
-    ans = subprocess.check_output([path_to_dolphintool, "extract", "-i", path_to_new_game, "-o", extract_iso_path], text=True)
+    # Linux must use flatpak command, check for that first.
+    if sys.platform == "linux":
+        ans = subprocess.check_output(["flatpak", "run", DOLPHIN_TOOL, DOLPHIN_EXE, "extract", "-i", path_to_new_game, "-o", extract_iso_path], text=True)
+    else:
+        ans = subprocess.check_output([path_to_dolphintool, "extract", "-i", path_to_new_game, "-o", extract_iso_path], text=True)
 
     # Generate DB files for vanilla ISO
     # iso_db_path = os.path.join(new_mod_dir, Path("DBs"), Path(gameID + dirs_to_make[3]))
@@ -161,10 +222,10 @@ def add_new_game_from_dolphin():
 
     return gameID, gameTitle
 
-def set_up_directory(directory_option):
-    tkinter.Tk().withdraw()  # prevents an empty tkinter window from appearing
+def set_up_directory(path_to_directory, directory_option):
+    # tkinter.Tk().withdraw()  # prevents an empty tkinter window from appearing
     # Return file selected
-    path_to_directory = filedialog.askdirectory()
+    # path_to_directory = filedialog.askdirectory()
     set_config_option(SETTINGS_INI,
                       path_to_config=os.path.join(os.getcwd(), "config"),
                       section_to_write="LauncherLoader",
@@ -362,7 +423,6 @@ def get_enabled_mods(game_title, mod_title, return_titles=False):
     # Get all relevant data by matching current item to the mod needed
     if game_title == "Add new game here":
         return QtCore.Qt.CheckState.Unchecked
-
     mod_GUID, mod_found_path, game_mod_dir = match_mod(game_title, mod_title)
 
     # Get all active mod keys
@@ -396,18 +456,11 @@ def get_enabled_mods(game_title, mod_title, return_titles=False):
 
 
 def start_dolphin_game(game_title):
-    path_to_dolphin = get_config_option(SETTINGS_INI,
-                                        "config",
-                                        "LauncherLoader",
-                                        "dolphindir")
-    path_to_mods = get_config_option(SETTINGS_INI,
-                                     "config",
-                                     "LauncherLoader",
-                                     "modsdir")
+    path_to_dolphin, path_to_mods = check_paths()
 
-    if not path_to_dolphin and not path_to_mods:
+    if not path_to_dolphin or not path_to_mods:
         # Error window here, print what's missing, end function
-        print("Error here! Path to dolphin or path to mods missing.")
+        # print("Error here! Path to dolphin or path to mods missing.")
         return
 
 
@@ -440,13 +493,23 @@ def start_dolphin_game(game_title):
 
     params = []
     if play_behavior == 0:
-        params = [path_to_dolphin_exe, "-e", path_to_game_dol]
+        if sys.platform == "linux":
+            params = ["flatpak", "run", DOLPHIN_EXE, "-e", f"{path_to_game_dol}"]
+        else:
+            params = [path_to_dolphin_exe, "-e", f"{path_to_game_dol}"]
     elif play_behavior == 1:
-        params = [path_to_dolphin_exe, "-e", path_to_game_dol, "-b"]
+        if sys.platform == "linux":
+            params = ["flatpak", "run", DOLPHIN_EXE, "-e", f"{path_to_game_dol}", "-b"]
+        else:
+            params = [path_to_dolphin_exe, "-e", f"{path_to_game_dol}", "-b"]
 
+    print(params)
     try:
-        dolphin_proc = subprocess.Popen(params,
-                               creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+        if sys.platform == "win32":
+            dolphin_proc = subprocess.Popen(params,
+                                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+        else:
+            dolphin_proc = subprocess.Popen(params)
         return
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}")

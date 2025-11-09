@@ -96,9 +96,9 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="configModButton">
+                <widget class="QPushButton" name="compileModsButton">
                  <property name="text">
-                  <string>Configure Mod</string>
+                  <string>Compile Mods</string>
                  </property>
                 </widget>
                </item>
@@ -374,14 +374,14 @@
             <widget class="QWidget" name="widget_7" native="true">
              <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
-               <widget class="QLabel" name="texturesDirLabel">
+               <widget class="QLabel" name="pluginsDirLabel">
                 <property name="text">
-                 <string>Textures Directory:</string>
+                 <string>Plugins Directory:</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPlainTextEdit" name="texturesDirPathField">
+               <widget class="QPlainTextEdit" name="pluginsDirPathField">
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
@@ -400,7 +400,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QToolButton" name="texturesDirToolbutton">
+               <widget class="QToolButton" name="pluginsDirToolbutton">
                 <property name="text">
                  <string>...</string>
                 </property>

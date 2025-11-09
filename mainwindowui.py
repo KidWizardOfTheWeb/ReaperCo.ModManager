@@ -10,7 +10,7 @@ from constants import * # Contains our paths
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QRunnable, pyqtSlot, QThreadPool
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QComboBox, QVBoxLayout, QWidget, QLineEdit, \
-    QDialog
+    QFileDialog
 
 from reordermodsui import ReorderModsWindow
 from addmodui import AddModWindow
@@ -55,8 +55,12 @@ class MainWindow(QMainWindow):
         # This does technically start a thread, but you can never update the thread... which sucks
         client_id = "1432755181598150908"
         # Init thread in window to access later?
-        RPC_Thread = threading.Thread(name="discord-RPC", target=richpresence.RPC_loop(client_id), daemon=True)
-        RPC_Thread.start()
+        try:
+            RPC_Thread = threading.Thread(name="discord-RPC", target=richpresence.RPC_loop(client_id), daemon=True)
+            RPC_Thread.start()
+        except Exception as e:
+            print("Discord not found. Skipping rich presence...")
+
 
         # ATTACH ALL BUTTON BEHAVIOR IN HERE
 
@@ -80,15 +84,15 @@ class MainWindow(QMainWindow):
                                                                 "LauncherLoader",
                                                                 "dolphindir"))
 
-        self.texturesDirPathField.setPlainText(get_config_option(SETTINGS_INI,
+        self.pluginsDirPathField.setPlainText(get_config_option(SETTINGS_INI,
                                                                  "config",
                                                                  "LauncherLoader",
-                                                                 "texturesdir"))
+                                                                 "pluginsdir"))
 
         # DIR BUTTON SETUP
         self.dolphinDirToolbutton.clicked.connect(self.set_directory)
         self.modsDirToolbutton.clicked.connect(self.set_directory)
-        self.texturesDirToolbutton.clicked.connect(self.set_directory)
+        self.pluginsDirToolbutton.clicked.connect(self.set_directory)
         self.openModsPushbutton.clicked.connect(self.open_directory)
         self.openDolphinPushbutton.clicked.connect(self.open_directory)
 
@@ -223,6 +227,14 @@ class MainWindow(QMainWindow):
     def refresh_modsUI(self):
         # Check game title, then check mod entries for game
         mod_entries = populate_modlist(self.currentGameCombobox.currentText())
+
+        # If game isn't found, repopulate game list and remove from our settings.ini
+        if "INVALID_ENTRIES" in mod_entries:
+            self.currentGameCombobox.clear()
+            self.currentGameCombobox.addItems(update_gamelist_combobox())
+            self.refresh_modsUI() # Refresh one more time with the game at the top of the list before ending
+            return
+
         self.set_modbox_title("Loading " + str(len(mod_entries)) + " mods...")
         # print("Loading " + str(len(list_of_mods)) + " mods...")
 
@@ -248,16 +260,30 @@ class MainWindow(QMainWindow):
     def open_directory(self):
         sent_button = self.sender()
         if sent_button == self.openModsPushbutton:
-            os.startfile(get_config_option(SETTINGS_INI,
-                                           "config",
-                                           "LauncherLoader",
-                                           "modsdir"))
+            if sys.platform == "win32":
+                os.startfile(get_config_option(SETTINGS_INI,
+                                            "config",
+                                            "LauncherLoader",
+                                            "modsdir"))
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, get_config_option(SETTINGS_INI,
+                                            "config",
+                                            "LauncherLoader",
+                                            "modsdir")])
 
         if sent_button == self.openDolphinPushbutton:
-            os.startfile(get_config_option(SETTINGS_INI,
-                                           "config",
-                                           "LauncherLoader",
-                                           "dolphindir"))
+            if sys.platform == "win32":
+                os.startfile(get_config_option(SETTINGS_INI,
+                                            "config",
+                                            "LauncherLoader",
+                                            "dolphindir"))
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, get_config_option(SETTINGS_INI,
+                                            "config",
+                                            "LauncherLoader",
+                                            "dolphindir")])
         pass
 
 
@@ -265,11 +291,15 @@ class MainWindow(QMainWindow):
     def set_directory(self):
         sent_button = self.sender()
         if sent_button == self.modsDirToolbutton:
-            self.modsDirPathField.setPlainText(set_up_directory('modsdir'))
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Mod Directory", options=QFileDialog.Option.ShowDirsOnly)
+            plaintext = set_up_directory(path_to_directory, 'modsdir')
+            self.modsDirPathField.setPlainText(plaintext)
         elif sent_button == self.dolphinDirToolbutton:
-            self.dolphinDirPathField.setPlainText(set_up_directory('dolphindir'))
-        elif sent_button == self.texturesDirToolbutton:
-            self.texturesDirPathField.setPlainText(set_up_directory('texturesdir'))
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Dolphin Directory", options=QFileDialog.Option.ShowDirsOnly)
+            self.dolphinDirPathField.setPlainText(set_up_directory(path_to_directory, 'dolphindir'))
+        elif sent_button == self.pluginsDirToolbutton:
+            path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Plugins Directory", options=QFileDialog.Option.ShowDirsOnly)
+            self.pluginsDirPathField.setPlainText(set_up_directory(path_to_directory, 'pluginsdir'))
         pass
 
 
@@ -277,7 +307,13 @@ class MainWindow(QMainWindow):
     def game_combo_box_option_select(self):
         selected_item = self.currentGameCombobox.currentText()
         if selected_item == "Add new game here":
-            gameID, gameTitle = add_new_game_from_dolphin()
+            path_to_new_game = QFileDialog.getOpenFileName(self, caption="Select Game", filter="Games (*.iso)")
+            try:
+                gameID, gameTitle = add_new_game_from_dolphin(path_to_new_game[0])
+            except Exception as e:
+                print("No file selected. Please select a game.\n")
+                gameID = None
+                gameTitle = None
 
             if gameID is None and gameTitle is None:
                 return
@@ -287,6 +323,8 @@ class MainWindow(QMainWindow):
 
             if gameTitle.lower() not in AllItems:
                 # Add this game title to settings.ini, set box to new title
+                # gameTitle MUST BE ONE CONTINUOUS STRING TO WORK IN INI
+                gameTitle = gameTitle.replace(" ", "")
                 self.currentGameCombobox.insertItem(0, gameTitle.lower())
                 set_config_option(SETTINGS_INI,
                                   path_to_config=os.path.join(os.getcwd(), "config"),
@@ -295,6 +333,7 @@ class MainWindow(QMainWindow):
                                   new_value=gameID)
 
             self.currentGameCombobox.setCurrentText(gameTitle.lower())
+            self.refresh_modsUI()
         else:
             # Profile changed, update mod list here
             self.refresh_modsUI()

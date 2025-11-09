@@ -8,13 +8,22 @@ def generate_settings_ini(settings_ini):
     # https://stackoverflow.com/questions/8884188/how-to-read-and-write-ini-file-with-python3
     config_data = configparser.ConfigParser()
 
-    config_data['LauncherLoader'] = {
-        "ISODir": "",
-        "TexturesDir": "",
-        "ModsDir": "",
-        "DolphinDir": "",
-        "SaveAndPlayBehavior": "0"
-    }
+    if sys.platform == "linux":
+        config_data['LauncherLoader'] = {
+            "ISODir": "",
+            "PluginsDir": "",
+            "ModsDir": "",
+            "DolphinDir": "Do Not Set This",
+            "SaveAndPlayBehavior": "0"
+        }
+    else:
+        config_data['LauncherLoader'] = {
+            "ISODir": "",
+            "PluginsDir": "",
+            "ModsDir": "",
+            "DolphinDir": "",
+            "SaveAndPlayBehavior": "0"
+        }
 
     config_data['AppSettings'] = {
         "autoUpdateCheckerLauncher": "1",

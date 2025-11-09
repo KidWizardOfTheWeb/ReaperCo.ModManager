@@ -8,7 +8,7 @@ import shutil
 import hashlib
 import uuid
 import tkinter
-from tkinter import filedialog
+# from tkinter import filedialog
 from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, ORIGINAL_ISO_DIR, MOD_ISO_DIR
 from filemanagerutils import get_config_option, set_config_option
 
@@ -350,7 +350,12 @@ def create_mod_dirs(new_mod_data, path_to_add):
             files_path = os.path.join(path_to_add, Path("files"))
             os.mkdir(files_path)
         if new_mod_data["Open Folder"]:
-            os.startfile(path_to_add)
+            if sys.platform == "win32":
+                os.startfile(path_to_add)
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.call([opener, path_to_add])
+            
 
     except FileExistsError:
         print("Mod already exists!")
