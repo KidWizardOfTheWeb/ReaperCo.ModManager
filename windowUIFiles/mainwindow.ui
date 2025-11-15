@@ -77,7 +77,26 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QListView" name="modsListView"/>
+              <widget class="QTableWidget" name="modsTableWidget">
+               <property name="dragEnabled">
+                <bool>true</bool>
+               </property>
+               <property name="dragDropMode">
+                <enum>QAbstractItemView::DragDropMode::InternalMove</enum>
+               </property>
+               <property name="defaultDropAction">
+                <enum>Qt::DropAction::IgnoreAction</enum>
+               </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+               </property>
+               <property name="selectionBehavior">
+                <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+               </property>
+               <property name="sortingEnabled">
+                <bool>false</bool>
+               </property>
+              </widget>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -470,7 +489,7 @@
               <item row="3" column="0">
                <widget class="QCheckBox" name="checkBox_5">
                 <property name="text">
-                 <string>Automatically update community codes on launch</string>
+                 <string>[DEBUG] Write final files list to MOD folder when saving mods</string>
                 </property>
                </widget>
               </item>

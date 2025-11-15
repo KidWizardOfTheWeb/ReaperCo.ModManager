@@ -8,9 +8,9 @@ import richpresence
 from mainwindowfunc import * # Contains our functionality so we can read this file properly
 from constants import * # Contains our paths
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
-from PyQt6.QtCore import QRunnable, pyqtSlot, QThreadPool
+from PyQt6.QtCore import QRunnable, pyqtSlot, QThreadPool, Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QComboBox, QVBoxLayout, QWidget, QLineEdit, \
-    QFileDialog
+    QFileDialog, QHeaderView, QTableWidgetItem, QAbstractItemView
 
 from reordermodsui import ReorderModsWindow
 from addmodui import AddModWindow
@@ -72,6 +72,8 @@ class MainWindow(QMainWindow):
         self.launchDolphinPlayRadiobutton.toggled.connect(self.toggle_play_behavior)
         self.playGameRadiobutton.setChecked(check_play_behavior(self.playGameRadiobutton.text()))
         self.playGameRadiobutton.toggled.connect(self.toggle_play_behavior)
+        self.checkBox_5.setChecked(settings_checkbox_init())
+        self.checkBox_5.checkStateChanged.connect(self.toggle_checkbox_settings)
 
         # DIR PLAIN TEXT SETUP
         self.modsDirPathField.setPlainText(get_config_option(SETTINGS_INI,
@@ -111,25 +113,61 @@ class MainWindow(QMainWindow):
 
         # MOD LISTVIEW
         # TODO: Change to tableview instead to allow for multiple columns
-        mod_entries = populate_modlist(self.currentGameCombobox.currentText())
+        mod_entries, mod_info = populate_modlist(self.currentGameCombobox.currentText())
 
-        self.model = QtGui.QStandardItemModel()
-        self.model.itemChanged.connect(self.get_checked_mod) # Attach to each item's checkbox for enable/disable behaviors
-        self.modsListView.setModel(self.model)
+        if not mod_info:
+            # There's no mods here, switch the tab to settings and ignore the rest
+            print("No mods or games! Add a game with the combobox.")
+            self.tabWidget.setCurrentIndex(1)
+            return
 
-        for i in mod_entries:
-            item = QtGui.QStandardItem(i)
-            item.setEditable(False)  # User cannot edit names
-            item.setCheckable(True)  # User can check to enable/disable mods
-            item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), item.text()))
-            self.model.appendRow(item)  # Add to table
-            # TODO: Change to tableview instead to allow for multiple columns
-            # TODO: Add column and header with mod details (from mod.ini)
-            # TODO: Add ordering box for saving mods (numbered in priority)
+        column_titles = ["Title", "Version", "Author", "Features"]
+
+        self.modsTableWidget.itemChanged.connect(self.get_checked_mod) # Attach to each item's checkbox for enable/disable behaviors
+        self.modsTableWidget.setRowCount(len(mod_entries))
+        self.modsTableWidget.setColumnCount(4)
+        self.modsTableWidget.setHorizontalHeaderLabels(column_titles)
+        self.modsTableWidget.verticalHeader().setVisible(False)
+        self.modsTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.modsTableWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.modsTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.modsTableWidget.setDragDropOverwriteMode(False)
+
+        row = 0
+        for info in mod_info:
+            # Make item
+            title_item = QtWidgets.QTableWidgetItem(info["title"])
+            title_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            ver_item = QtWidgets.QTableWidgetItem(info["version"])
+            ver_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            auth_item = QtWidgets.QTableWidgetItem(info["author"])
+            auth_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+
+            title_item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), title_item.text()))
+            self.modsTableWidget.blockSignals(True)
+            self.modsTableWidget.setItem(row, 0, title_item)
+            self.modsTableWidget.setItem(row, 1, ver_item)
+            self.modsTableWidget.setItem(row, 2, auth_item)
+            self.modsTableWidget.blockSignals(False)
+            row+=1
+
+        # for i in mod_entries:
+        #     item = QtGui.QStandardItem(i)
+        #     item.setEditable(False)  # User cannot edit names
+        #     item.setCheckable(True)  # User can check to enable/disable mods
+        #     item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), item.text()))
+        #     self.model.appendRow(item)  # Add to table
+        #     # TODO: Change to tableview instead to allow for multiple columns
+        #     # TODO: Add column and header with mod details (from mod.ini)
+        #     # TODO: Add ordering box for saving mods (numbered in priority)
         self.set_modbox_title("Loaded " + str(len(mod_entries)) + " mods.\n")
         print("Loaded " + str(len(mod_entries)) + " mods.\n")
 
     # FUNCTIONS
+
+    def toggle_checkbox_settings(self, checked):
+        save_checkbox_settings(self.sender().text(), checked)
+        pass
 
     def toggle_play_behavior(self, checked):
         set_play_behavior(self.sender().text(), checked)
@@ -172,61 +210,79 @@ class MainWindow(QMainWindow):
 
     def save_mods(self):
         # Save ALL activated mod databases here
+
+        # TODO: We want to save each mod's file database here at the end in the order they were given
+        # So instead of getting enabled mods, get the mods that are checked, from top to bottom
+
         # 1. Retrieve all active mods
         checked_mods = []
-        for index in range(self.model.rowCount()):
-            current_item = self.model.item(index)
+        for index in range(self.modsTableWidget.rowCount()):
+            current_item = self.modsTableWidget.item(index, 0)
             enabled_mod = get_enabled_mods(self.currentGameCombobox.currentText(), current_item.text(), return_titles=True)
             if enabled_mod:
                 checked_mods.append(enabled_mod)
             pass
 
+
+        # For now, this ensures that everything at the top of the list is prioritized. We will make this a toggle later.
+        checked_mods.reverse()
+        save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
+
+        # Below is old behavior. We can now reorder mods in the mods window itself.
+        # Since we read column-by-column, the order is maintained from what the user reorders things to,
+        # and we no longer need an extra window
+
         # This allows re-ordering mods to prevent collisions
         # Pauses execution until window is closed
         # TODO: Figure out how to make this optional
         # Add config option for this?
-
         # If no mods are checked or there's only one mod, just save anyway and skip the window.
-        if not checked_mods or len(checked_mods) <= 1:
-            save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
-            return
-
-        reorder = ReorderModsWindow(checked_mods)
-        checked_mods.clear()
-        if reorder.exec():
-            for index in range (reorder.listWidget.count()):
-                checked_mods.append(reorder.listWidget.item(index).text())
-            # 2. Send checked mods for parsing of their DBs
-            save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
-            return
-
-        # If cancelled, don't save.
-        print("Saving mods cancelled.\n")
+        # if not checked_mods or len(checked_mods) <= 1:
+        #     save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
+        #     return
+        #
+        # reorder = ReorderModsWindow(checked_mods)
+        # checked_mods.clear()
+        # if reorder.exec():
+        #     for index in range (reorder.listWidget.count()):
+        #         checked_mods.append(reorder.listWidget.item(index).text())
+        #     # 2. Send checked mods for parsing of their DBs
+        #     save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
+        #     return
+        #
+        # # If cancelled, don't save.
+        # print("Saving mods cancelled.\n")
         return
 
     def get_checked_mod(self, item):
+        if item.column() != 0:
+            # For QTableView, do NOT make anything checkable here.
+            return
         if item.checkState() == QtCore.Qt.CheckState.Checked:
-            print(item.text() + " checked. Loading...")
+            # print(item.text() + " checked. Loading...")
             # Make this ASYNC
             self.set_modbox_title(item.text() + " checked. Loading...")
             # Enable mod:
             # 1. Get mod path
             # 2. Generate DB
             # 3. Add to active mod list
+
+            # TODO: Instead of doing all that, save enabling mods at the end. Or at least save adding to the database until saved properly.
             enable_mod(self.currentGameCombobox.currentText(), item.text())
             self.set_modbox_title(item.text() + " enabled.\n")
         else:
-            print(item.text() + " unchecked. Loading...")
+            # print(item.text() + " unchecked. Loading...")
             # Make this ASYNC
             self.set_modbox_title(item.text() + " unchecked. Loading...")
             disable_mod(self.currentGameCombobox.currentText(), item.text())
             self.set_modbox_title(item.text() + " disabled.\n")
             pass
-        pass
+        return
 
     def refresh_modsUI(self):
         # Check game title, then check mod entries for game
-        mod_entries = populate_modlist(self.currentGameCombobox.currentText())
+        # TODO: rework this entirely
+        mod_entries, mod_info = populate_modlist(self.currentGameCombobox.currentText())
 
         # If game isn't found, repopulate game list and remove from our settings.ini
         if "INVALID_ENTRIES" in mod_entries:
@@ -238,19 +294,34 @@ class MainWindow(QMainWindow):
         self.set_modbox_title("Loading " + str(len(mod_entries)) + " mods...")
         # print("Loading " + str(len(list_of_mods)) + " mods...")
 
-        self.model = QtGui.QStandardItemModel()
-        self.model.itemChanged.connect(self.get_checked_mod)  # Attach to each item's checkbox for enable/disable behaviors
-        self.modsListView.setModel(self.model)
-        self.model.clear()  # Clear all items first before adding new mods
-        for i in mod_entries:
-            item = QtGui.QStandardItem(i)
-            item.setEditable(False)  # User cannot edit names
-            item.setCheckable(True)  # User can enable/disable mods
-            item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), item.text()))
-            self.model.appendRow(item)  # Add to table
-            # TODO: Change to tableview instead to allow for multiple columns
-            # TODO: Add column and header with mod details (from mod.ini)
-            # TODO: Add ordering box for saving mods (numbered in priority)
+        column_titles = ["Title", "Version", "Author", "Features"]
+
+        self.modsTableWidget.setRowCount(len(mod_entries))
+        self.modsTableWidget.setColumnCount(4)
+        self.modsTableWidget.setHorizontalHeaderLabels(column_titles)
+        self.modsTableWidget.verticalHeader().setVisible(False)
+        self.modsTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.modsTableWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.modsTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.modsTableWidget.setDragDropOverwriteMode(False)
+
+        row = 0
+        for info in mod_info:
+            # Make item
+            title_item = QtWidgets.QTableWidgetItem(info["title"])
+            title_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            ver_item = QtWidgets.QTableWidgetItem(info["version"])
+            ver_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            auth_item = QtWidgets.QTableWidgetItem(info["author"])
+            auth_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+
+            title_item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), title_item.text()))
+            self.modsTableWidget.blockSignals(True)
+            self.modsTableWidget.setItem(row, 0, title_item)
+            self.modsTableWidget.setItem(row, 1, ver_item)
+            self.modsTableWidget.setItem(row, 2, auth_item)
+            self.modsTableWidget.blockSignals(False)
+            row += 1
         print("Loaded " + str(len(mod_entries)) + " mods.\n")
         self.set_modbox_title("Loaded " + str(len(mod_entries)) + " mods.\n")
         pass

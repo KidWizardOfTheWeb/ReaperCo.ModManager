@@ -1,3 +1,4 @@
+import datetime
 import os.path
 import json
 import sys
@@ -7,8 +8,9 @@ import shutil
 
 from PyQt6 import QtCore, QtWidgets
 
-from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, DB_INI, MOD_ISO_DIR, DOLPHIN_EXE
-from filemanagerutils import get_config_option, set_config_option, generate_modsDB_ini
+from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, DB_INI, MOD_ISO_DIR, DOLPHIN_EXE, \
+    MODINFO_INI
+from filemanagerutils import get_config_option, set_config_option, generate_modsDB_ini, generate_modInfo_ini_file
 from modfileutils import generate_file_DB_for_mod, set_modsDB, get_modsDB, merge_mod_dbs, move_mod_files_to_final_place, \
     create_mod_dirs
 import subprocess
@@ -32,6 +34,7 @@ def check_paths():
     return path_to_dolphin, path_to_mods
 
 # Get all mods, add then to modsDB, populate list with 'em
+# TODO: Rework entirely to match HMM's save process more (i.e. only saves when "save" is pressed).
 def populate_modlist(current_game):
 
     # Get what games are in our game list
@@ -40,7 +43,7 @@ def populate_modlist(current_game):
 
     # Match the key-value to current_game
     if not game_dict:
-        return ["No mods. Open a game and add one!"]
+        return ["No mods. Open a game and add one!"], None
 
     gameID = game_dict[current_game]
 
@@ -69,6 +72,10 @@ def populate_modlist(current_game):
             print("No modsDB.ini found for game! Generating and attempting to add mods...")
             generate_modsDB_ini(path_to_mods_db)
 
+
+    # Make a list for mod info
+    list_of_modinfo = []
+
     # Remove nonexistent mods that no longer exist
     for mod in list_of_mods:
         mod_to_test = os.path.join(path_to_mods_folder, Path(list(mod.values())[0]))
@@ -78,10 +85,32 @@ def populate_modlist(current_game):
             # Make sure to remove from active mods list and fix active mods list too
             disable_mod(game_title=current_game, mod_title=list(mod.values())[0], game_mod_dir_override=game_mod_dir, GUID_override=list(mod.keys())[0])
 
+        # If it does exist, return info from modinfo.ini
+        else:
+            # Make the path to the modinfo file
+
+            # Get necessary information, send back in list
+            try:
+                list_of_modinfo.append(get_config_option(MODINFO_INI, mod_to_test, "Desc", return_keys=True, return_values=True))
+            except:
+                # If no mod info was generated originally for this mod, do it here
+                placeholder_mod_data = {
+                    "Author": "",
+                    "Mod Title": list(mod.values())[0],
+                    "Version": "",
+                    "Description": "",
+                    "Date": str(datetime.datetime.now())
+                }
+                generate_modInfo_ini_file(placeholder_mod_data, mod_to_test)
+                list_of_modinfo.append(
+                    get_config_option(MODINFO_INI, mod_to_test, "Desc", return_keys=True, return_values=True))
+                print("Modinfo not found for mod! Creating...")
+            pass
+
     list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir)
     print("Loading " + str(len(list_of_mods)) + " mods...")
 
-    return list_of_mods
+    return list_of_mods, list_of_modinfo
 
 
 # Add games and always add "add game option" at the end
@@ -116,7 +145,7 @@ def update_gamelist_combobox():
     return game_list
 
 
-# Allows users to add a new game from dolphin, provided it's an ISO (other file supports coming later)
+# Allows users to add a new game from dolphin, provided it's an ISO (other file support coming later)
 def add_new_game_from_dolphin(path_to_new_game):
     # Check if a path to dolphin and the mods dir is set first
 
@@ -273,6 +302,7 @@ def match_mod(game_title, mod_title):
 
     return mod_GUID, mod_found_path, game_mod_dir
 
+# TODO: Only save to modsDB when "save" is pressed.
 def enable_mod(game_title, mod_title):
     mod_GUID, mod_found_path, game_mod_dir = match_mod(game_title, mod_title)
 
@@ -302,6 +332,20 @@ def enable_mod(game_title, mod_title):
     active_mod_keys = [s for s in main_sect_keys if "activemod" in s]
     # 'activemodcount' is also returned, so subtract 1
     active_mod_list_len = len(active_mod_keys) - 1
+    #
+    # # BEFORE WE ADD A MOD OR INCREASE COUNT, check if it exists
+    # # Due to the altered functionality of a QTableWidget activating this on connect, it activates on init for some reason
+    # #
+    #
+    # active_GUIDs = get_config_option(MODSDB_INI,
+    #                   path_to_config=game_mod_dir,
+    #                   section_to_check='Main',
+    #                   return_values=True)
+    #
+    # if mod_GUID in active_GUIDs:
+    #     print("Skip")
+    #     return
+
     set_config_option(MODSDB_INI,
                       path_to_config=game_mod_dir,
                       section_to_write='Main',
@@ -318,7 +362,7 @@ def enable_mod(game_title, mod_title):
     # Now on next load, this option should be CHECKED.
     # If not, we can duplicate active mods (bad)
 
-    print(mod_title + " enabled.\n")
+    # print(mod_title + " enabled.\n")
 
     # Current issues:
     # 1. We can dupe mods
@@ -332,12 +376,12 @@ def enable_mod(game_title, mod_title):
 def save_mods_to_modded_game(active_mods, game_title):
     print("Saving " + str(len(active_mods)) + " mods to the database...")
     # This should return a dictionary of ALL necessary mods and save it to gameID_MOD's database
-    mod_iso_db_path = merge_mod_dbs(active_mods, game_title)
+    mod_iso_db_path, file_dict = merge_mod_dbs(active_mods, game_title)
     # Move ALL mod files to final place in gameID_MOD
-    move_mod_files_to_final_place(mod_iso_db_path)
+    move_mod_files_to_final_place(mod_iso_db_path, file_dict)
     print("Saved " + str(len(active_mods)) + " to the database.\n")
 
-
+# TODO: Only save to modsDB when "save" is pressed.
 def disable_mod(game_title, mod_title, game_mod_dir_override=None, GUID_override=None):
     # Get GUID and path to this particular mod if we don't already supply this
     if not game_mod_dir_override or not GUID_override:
@@ -370,20 +414,29 @@ def disable_mod(game_title, mod_title, game_mod_dir_override=None, GUID_override
                               option_to_write=active_mod,
                               clear_option=True)
             break
+        if active_mod == "activemodcount":
+            active_mod_list_len = int(ID) - 1
+            # Decrease active mod count too
+            set_config_option(MODSDB_INI,
+                              path_to_config=game_mod_dir,
+                              section_to_write='Main',
+                              option_to_write='activemodcount',
+                              new_value=str(active_mod_list_len))
+
 
     # Alter the active mod count (note: this was a lazy copy, optimize this man...)
-    main_sect_keys = get_config_option(MODSDB_INI, path_to_config=game_mod_dir, section_to_check='Main',
-                                       return_keys=True)
-    active_mod_keys = [key for key in main_sect_keys if "activemod" in key]
+    # main_sect_keys = get_config_option(MODSDB_INI, path_to_config=game_mod_dir, section_to_check='Main',
+    #                                    return_keys=True)
+    # active_mod_keys = [key for key in main_sect_keys if "activemod" in key]
     # 'activemodcount' is also returned, so subtract 1
-    active_mod_list_len = len(active_mod_keys) - 1
+    # active_mod_list_len = len(active_mod_keys) - 1
 
     # Decrease active mod count too
-    set_config_option(MODSDB_INI,
-                      path_to_config=game_mod_dir,
-                      section_to_write='Main',
-                      option_to_write='activemodcount',
-                      new_value=str(active_mod_list_len))
+    # set_config_option(MODSDB_INI,
+    #                   path_to_config=game_mod_dir,
+    #                   section_to_write='Main',
+    #                   option_to_write='activemodcount',
+    #                   new_value=str(active_mod_list_len))
 
     main_sect_keys = get_config_option(MODSDB_INI,
                                        path_to_config=game_mod_dir,
@@ -415,11 +468,11 @@ def disable_mod(game_title, mod_title, game_mod_dir_override=None, GUID_override
 
             active_mod_number+=1
 
-    print(mod_title + " disabled.\n")
+    # print(mod_title + " disabled.\n")
     pass
 
-
-def get_enabled_mods(game_title, mod_title, return_titles=False):
+# TODO: Return enabled mods, do not handle our checked mods like this
+def get_enabled_mods(game_title, mod_title, return_titles=False, provide_keys=None):
     # Get all relevant data by matching current item to the mod needed
     if game_title == "Add new game here":
         return QtCore.Qt.CheckState.Unchecked
@@ -427,11 +480,15 @@ def get_enabled_mods(game_title, mod_title, return_titles=False):
 
     # Get all active mod keys
 
-    main_sect_keys = get_config_option(MODSDB_INI,
-                                       path_to_config=game_mod_dir,
-                                       section_to_check='Main',
-                                       return_keys=True,
-                                       return_values=True)
+    main_sect_keys = None
+    if provide_keys:
+        main_sect_keys = provide_keys
+    else:
+        main_sect_keys = get_config_option(MODSDB_INI,
+                                           path_to_config=game_mod_dir,
+                                           section_to_check='Main',
+                                           return_keys=True,
+                                           return_values=True)
 
     active_mod_dict = dict([(key, val) for key, val in main_sect_keys.items() if "activemod" in key])
 
@@ -532,7 +589,12 @@ def create_mod_processing(new_mod_data, game_title):
     # Get the modsDB.ini file and check/add to mods section
     path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID), Path(new_mod_data["Mod Title"])))
 
+    # Create our directories as requested
     create_mod_dirs(new_mod_data, path_to_mods_folder)
+
+    # Generate an info file for the mod. This will be used for the UI in the QTableView when added
+    # TODO: Should add a way to access and modify these details later...
+    generate_modInfo_ini_file(new_mod_data, path_to_mods_folder)
     pass
 
 
@@ -565,3 +627,23 @@ def set_play_behavior(radio_button_text, is_checked):
                           option_to_write="saveandplaybehavior",
                           new_value="1")
     pass
+
+
+def save_checkbox_settings(checkbox_text, is_checked):
+    state_to_write = 1 if is_checked == QtCore.Qt.CheckState.Checked else 0
+    if checkbox_text == '[DEBUG] Write final files list to MOD folder when saving mods':
+        set_config_option(SETTINGS_INI,
+                          path_to_config=os.path.join(os.getcwd(), "config"),
+                          section_to_write="AppSettings",
+                          option_to_write="createDBForFinalOutput",
+                          new_value=str(state_to_write))
+
+def settings_checkbox_init():
+    is_checked = int(get_config_option(SETTINGS_INI,
+                                          "config",
+                                          "AppSettings",
+                                          "createDBForFinalOutput"))
+
+    if is_checked:
+        return True
+    return False

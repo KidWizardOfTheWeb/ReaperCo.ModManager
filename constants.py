@@ -17,6 +17,7 @@ elif platform == "linux": #Linux
     DOLPHIN_TOOL = "--command=dolphin-tool"
 SETTINGS_INI = "settings.ini"
 MODSDB_INI = "modsDB.ini"
+MODINFO_INI = "modinfo.ini"
 DB_INI = "db.ini"
 
 ORIGINAL_ISO_DIR = "{}_ISO"

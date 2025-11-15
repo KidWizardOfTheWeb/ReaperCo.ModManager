@@ -302,17 +302,25 @@ def merge_mod_dbs(active_mods, game_title):
 
     # Write dict to gameID_MOD folder
     mod_iso_db = os.path.join(Path(game_mod_dir), Path(MOD_ISO_DIR.format(gameID)))
-    with open(os.path.join(mod_iso_db, Path("db.json")), "w") as file:
-        json.dump(combined_file_dict, file, indent=4)  # indent for pretty-printing
 
-    return mod_iso_db
+    # Note: we don't use this for the next function because R/W times slow this down a ton. We now keep this optionally as a debug toggle.
+    write_final_DB = int(get_config_option(SETTINGS_INI,
+                                       "config",
+                                       "AppSettings",
+                                       "createDBForFinalOutput"))
+    if write_final_DB:
+        with open(os.path.join(mod_iso_db, Path("db.json")), "w") as file:
+            json.dump(combined_file_dict, file, indent=4)  # indent for pretty-printing
+
+    return mod_iso_db, combined_file_dict
 
 
-def move_mod_files_to_final_place(mod_iso_db):
+def move_mod_files_to_final_place(mod_iso_db, file_dict):
     # Get file dict from... file
-    combined_file_dict = {}
-    with open(os.path.join(mod_iso_db, Path("db.json")), "r") as file:
-        combined_file_dict = json.load(file)
+    combined_file_dict = file_dict
+    # combined_file_dict = {}
+    # with open(os.path.join(mod_iso_db, Path("db.json")), "r") as file:
+    #     combined_file_dict = json.load(file)
 
     # Go through every key (top-level directory), then every key-value[0] to get the file directory to move into gameID_MOD
 

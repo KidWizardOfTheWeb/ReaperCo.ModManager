@@ -2,6 +2,10 @@ import sys
 import os
 import configparser
 from pathlib import Path
+import datetime
+
+from constants import MODINFO_INI
+
 
 def generate_settings_ini(settings_ini):
     # Learned about configparser here, so I'm using it since I can append easily:
@@ -28,7 +32,7 @@ def generate_settings_ini(settings_ini):
     config_data['AppSettings'] = {
         "autoUpdateCheckerLauncher": "1",
         "autoUpdateCheckerMods": "1",
-        "autoUpdateCheckerCommCodes": "1",
+        "createDBForFinalOutput": "0",
         "keepLauncherOpenAfterGameStart": "1",
         "Language": "English",
         "Theme": "Basic"
@@ -115,6 +119,28 @@ def generate_modsDB_ini(modsDB_ini, force_overwrite=False):
     print("modsDB.ini Generated!")
     return
 
+# Use this to generate info when creating a mod
+def generate_modInfo_ini_file(new_mod_data, path_to_mod_folder):
+    # We create a file to hold the mod title, author, and other details to display in our window
+    config_data = configparser.ConfigParser()
+
+    # For now, there's only a few fields to generate here
+    # Date is auto generated based on current time
+    config_data['Desc'] = {
+        "Author": new_mod_data["Author"],
+        "Title": new_mod_data["Mod Title"],
+        "Version": new_mod_data["Version"],
+        "Description": new_mod_data["Description"],
+        "Date": str(datetime.datetime.now())
+    }
+
+    mod_ini = os.path.join(Path(path_to_mod_folder), Path(MODINFO_INI))
+
+    with open(mod_ini, 'w') as f:
+        config_data.write(f)
+
+    print(MODINFO_INI + " Generated!")
+    pass
 
 def generate_config_ini_files(cwdPath):
     # generate ini's here
