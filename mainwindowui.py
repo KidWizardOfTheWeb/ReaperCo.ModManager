@@ -57,11 +57,11 @@ class MainWindow(QMainWindow):
         # This does technically start a thread, but you can never update the thread... which sucks
         client_id = "1432755181598150908"
         # Init thread in window to access later?
-        # try:
-        #     RPC_Thread = threading.Thread(name="discord-RPC", target=richpresence.RPC_loop(client_id), daemon=True)
-        #     RPC_Thread.start()
-        # except Exception as e:
-        #     print("Discord not found. Skipping rich presence...")
+        try:
+            RPC_Thread = threading.Thread(name="discord-RPC", target=richpresence.RPC_loop(client_id), daemon=True)
+            RPC_Thread.start()
+        except Exception as e:
+            print("Discord not found. Skipping rich presence...")
 
 
         # ATTACH ALL BUTTON BEHAVIOR IN HERE
