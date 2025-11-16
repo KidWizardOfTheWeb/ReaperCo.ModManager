@@ -4,7 +4,6 @@ UI_FOLDER_PATH = Path("windowUIFiles")
 
 # Some programmers hate magic strings. While this seemed weird to me at first to write this as a constant,
 # I think it'll just be easier to have this available as an autofill tbh.
-# TODO: Make linux/mac versions of these. .EXE is a mainly windows thing (as I am a windows user rn, sorry for my sins).
 
 if platform == "win32": #Windows
     DOLPHIN_EXE = "dolphin.exe"
@@ -15,10 +14,12 @@ elif platform == "darwin": #MacOS
 elif platform == "linux": #Linux
     DOLPHIN_EXE = "org.DolphinEmu.dolphin-emu"
     DOLPHIN_TOOL = "--command=dolphin-tool"
+
 SETTINGS_INI = "settings.ini"
 MODSDB_INI = "modsDB.ini"
 MODINFO_INI = "modinfo.ini"
 DB_INI = "db.ini"
+DB_JSON = "db.json"
 
 ORIGINAL_ISO_DIR = "{}_ISO"
 MOD_ISO_DIR = "{}_MOD"

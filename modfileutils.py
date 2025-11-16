@@ -9,11 +9,12 @@ import hashlib
 import uuid
 import tkinter
 # from tkinter import filedialog
-from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, ORIGINAL_ISO_DIR, MOD_ISO_DIR
+from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, ORIGINAL_ISO_DIR, MOD_ISO_DIR, DB_JSON
 from filemanagerutils import get_config_option, set_config_option
 
 
 # Takes in the modsDB file, adds to the file as needed
+# ONLY WRITES TO MODS SECTION, DO NOT TOUCH OTHER SECTIONS PLEASE
 def set_modsDB(modsDB_data, path_to_gamemod_folder, gameID=None, mods_to_remove=None):
     # Any and all mods should be appended here if they do not already exist
     configdata = configparser.ConfigParser()
@@ -58,7 +59,8 @@ def set_modsDB(modsDB_data, path_to_gamemod_folder, gameID=None, mods_to_remove=
         # Check if this is actually a directory (zip files should NOT proc here)
         if not os.path.isdir(path_of_mod):
             continue
-        # Write to our stored mods
+
+        # Write to our stored mods, generate new GUID
         set_config_option(MODSDB_INI,
                           path_to_config=path_to_gamemod_folder,
                           section_to_write="Mods",
@@ -171,7 +173,7 @@ def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None):
     if files_dict: output_dict.update({"files": files_dict})
 
     # After all that parsing, we want to save our dicts as a JSON for later ref
-    with open(os.path.join(path_to_db, "db.json"), "w") as file:
+    with open(os.path.join(path_to_db, DB_JSON), "w") as file:
         json.dump(output_dict, file, indent=4)  # indent for pretty-printing
 
     # Read it back
@@ -251,9 +253,8 @@ def verify_files_from_vanilla_copy(path_to_iso_root=None, path_to_isoDB_root=Non
     
     """
 
-# Merge ALL databases into final db.json for modded game
-# Use base game ISO db as the original dict to add to
-def merge_mod_dbs(active_mods, game_title):
+# Gets the directory to the game based on game title
+def get_path_to_game_folder(game_title):
     # Get our general mod directory location
     base_mod_dir = get_config_option(SETTINGS_INI, "config", "LauncherLoader", "modsdir")
 
@@ -263,6 +264,29 @@ def merge_mod_dbs(active_mods, game_title):
 
     # Combine the base directory + gameID to get to the main game directory
     game_mod_dir = os.path.join(Path(base_mod_dir), Path(gameID))
+
+    # Return None if this does not exist
+    if not os.path.isdir(game_mod_dir):
+        return None
+
+    return game_mod_dir
+
+
+# Merge ALL databases into final db.json for modded game
+# Use base game ISO db as the original dict to add to
+def merge_mod_dbs(active_mods, game_title):
+    # Get our general mod directory location
+    # base_mod_dir = get_config_option(SETTINGS_INI, "config", "LauncherLoader", "modsdir")
+    #
+    # # Get all games and then gameID from this dictionary
+    # list_of_games = get_config_option(SETTINGS_INI, "config", "GameList", return_keys=True, return_values=True)
+    # gameID = list_of_games[game_title]
+    #
+    # # Combine the base directory + gameID to get to the main game directory
+    # game_mod_dir = os.path.join(Path(base_mod_dir), Path(gameID))
+
+    game_mod_dir = get_path_to_game_folder(game_title)
+    gameID = os.path.basename(game_mod_dir)
 
     # Return all paths to mods in this directory
     path_to_mods_db = os.path.join(game_mod_dir, MODSDB_INI)
@@ -287,12 +311,12 @@ def merge_mod_dbs(active_mods, game_title):
 
     combined_file_dict = {}
 
-    with open(os.path.join(original_iso_db, "db.json"), "r") as file:
+    with open(os.path.join(original_iso_db, DB_JSON), "r") as file:
         combined_file_dict = json.load(file)
 
     # Load all other dictionaries, OR them into the combined one
     for index in range(len(active_mods)):
-        with open(os.path.join(Path(mod_found_path[index]), "db.json"), "r") as file:
+        with open(os.path.join(Path(mod_found_path[index]), DB_JSON), "r") as file:
             # combined_file_dict.update(json.load(file))
             new_dict_to_add = json.load(file)
             # Get the keys of the dictionary, update that key in combined_file_dict
@@ -309,7 +333,7 @@ def merge_mod_dbs(active_mods, game_title):
                                        "AppSettings",
                                        "createDBForFinalOutput"))
     if write_final_DB:
-        with open(os.path.join(mod_iso_db, Path("db.json")), "w") as file:
+        with open(os.path.join(mod_iso_db, Path(DB_JSON)), "w") as file:
             json.dump(combined_file_dict, file, indent=4)  # indent for pretty-printing
 
     return mod_iso_db, combined_file_dict

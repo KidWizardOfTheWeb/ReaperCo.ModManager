@@ -3,6 +3,7 @@ import sys
 import time
 
 import threading
+
 import richpresence
 
 from mainwindowfunc import * # Contains our functionality so we can read this file properly
@@ -12,7 +13,7 @@ from PyQt6.QtCore import QRunnable, pyqtSlot, QThreadPool, Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QComboBox, QVBoxLayout, QWidget, QLineEdit, \
     QFileDialog, QHeaderView, QTableWidgetItem, QAbstractItemView
 
-from reordermodsui import ReorderModsWindow
+from modfileutils import get_path_to_game_folder
 from addmodui import AddModWindow
 
 
@@ -51,15 +52,16 @@ class MainWindow(QMainWindow):
         super().__init__()
         # Load mainwindow file
         uic.loadUi(os.path.join(UI_FOLDER_PATH, 'mainwindow.ui'), self)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         # This does technically start a thread, but you can never update the thread... which sucks
         client_id = "1432755181598150908"
         # Init thread in window to access later?
-        try:
-            RPC_Thread = threading.Thread(name="discord-RPC", target=richpresence.RPC_loop(client_id), daemon=True)
-            RPC_Thread.start()
-        except Exception as e:
-            print("Discord not found. Skipping rich presence...")
+        # try:
+        #     RPC_Thread = threading.Thread(name="discord-RPC", target=richpresence.RPC_loop(client_id), daemon=True)
+        #     RPC_Thread.start()
+        # except Exception as e:
+        #     print("Discord not found. Skipping rich presence...")
 
 
         # ATTACH ALL BUTTON BEHAVIOR IN HERE
@@ -98,11 +100,6 @@ class MainWindow(QMainWindow):
         self.openModsPushbutton.clicked.connect(self.open_directory)
         self.openDolphinPushbutton.clicked.connect(self.open_directory)
 
-        # GAME COMBOBOX
-        # Create a dictionary of added games from the add_new_game function
-        self.currentGameCombobox.addItems(update_gamelist_combobox())
-        self.currentGameCombobox.activated.connect(self.game_combo_box_option_select)
-
         # BOTTOM ROW OF BUTTONS
         self.addModButton.clicked.connect(self.create_mod)
         self.refreshListButton.clicked.connect(self.refresh_modsUI)
@@ -111,15 +108,14 @@ class MainWindow(QMainWindow):
         self.saveModsPushbutton.clicked.connect(self.save_mods)
         self.saveAndPlayPushbutton.clicked.connect(self.save_and_start_game)
 
-        # MOD LISTVIEW
-        # TODO: Change to tableview instead to allow for multiple columns
-        mod_entries, mod_info = populate_modlist(self.currentGameCombobox.currentText())
+        # GAME COMBOBOX
+        # Create a dictionary of added games from the add_new_game function
+        # TODO: add "last selected game" as a settings property to open up to the last selected game.
+        self.currentGameCombobox.addItems(update_gamelist_combobox())
+        self.currentGameCombobox.activated.connect(self.game_combo_box_option_select)
 
-        if not mod_info:
-            # There's no mods here, switch the tab to settings and ignore the rest
-            print("No mods or games! Add a game with the combobox.")
-            self.tabWidget.setCurrentIndex(1)
-            return
+        # MOD QTABLEWIDGET
+        mod_entries, mod_info = populate_modlist(self.currentGameCombobox.currentText())
 
         column_titles = ["Title", "Version", "Author", "Features"]
 
@@ -133,6 +129,19 @@ class MainWindow(QMainWindow):
         self.modsTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.modsTableWidget.setDragDropOverwriteMode(False)
 
+        # MAKE SURE EVERYTHING IS HOOKED BEFORE CANCELLING FILLING THESE OUT
+        if self.currentGameCombobox.count() <= 1:
+            # There's no games here, switch the tab to settings and ignore the rest of init
+            print("No mods or games! Add a game with the combobox.")
+            self.tabWidget.setTabEnabled(0, False)
+            self.tabWidget.setCurrentIndex(1)
+            return
+
+        if not mod_info:
+            # There's no mods here, don't fill out mod list
+            print("No mods! Add some mods with the \"Add mod\" button on the mods screen.")
+            return
+
         row = 0
         for info in mod_info:
             # Make item
@@ -142,28 +151,28 @@ class MainWindow(QMainWindow):
             ver_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
             auth_item = QtWidgets.QTableWidgetItem(info["author"])
             auth_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            # desc_item = QtWidgets.QTableWidgetItem(info["description"])
+            # desc_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
 
-            title_item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), title_item.text()))
+            title_item.setCheckState(is_mod_enabled(self.currentGameCombobox.currentText(), title_item.text()))
             self.modsTableWidget.blockSignals(True)
             self.modsTableWidget.setItem(row, 0, title_item)
             self.modsTableWidget.setItem(row, 1, ver_item)
             self.modsTableWidget.setItem(row, 2, auth_item)
+            # self.modsTableWidget.setItem(row, 3, desc_item)
             self.modsTableWidget.blockSignals(False)
-            row+=1
+            row += 1
 
-        # for i in mod_entries:
-        #     item = QtGui.QStandardItem(i)
-        #     item.setEditable(False)  # User cannot edit names
-        #     item.setCheckable(True)  # User can check to enable/disable mods
-        #     item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), item.text()))
-        #     self.model.appendRow(item)  # Add to table
-        #     # TODO: Change to tableview instead to allow for multiple columns
-        #     # TODO: Add column and header with mod details (from mod.ini)
-        #     # TODO: Add ordering box for saving mods (numbered in priority)
         self.set_modbox_title("Loaded " + str(len(mod_entries)) + " mods.\n")
         print("Loaded " + str(len(mod_entries)) + " mods.\n")
 
     # FUNCTIONS
+
+    # This runs literally every time they click the window. I wish there was a better way to do this.
+    # def focusInEvent(self, event):
+    #     # super().focusInEvent(event)  # Call the base class implementation
+    #     self.refresh_modsUI()
+    #     pass
 
     def toggle_checkbox_settings(self, checked):
         save_checkbox_settings(self.sender().text(), checked)
@@ -211,47 +220,33 @@ class MainWindow(QMainWindow):
     def save_mods(self):
         # Save ALL activated mod databases here
 
-        # TODO: We want to save each mod's file database here at the end in the order they were given
         # So instead of getting enabled mods, get the mods that are checked, from top to bottom
 
-        # 1. Retrieve all active mods
+        # Reconstruct our DB (yes, fully with new GUIDs)
+        game_mod_dir = get_path_to_game_folder(self.currentGameCombobox.currentText())
+        path_to_mods_db = os.path.join(game_mod_dir, MODSDB_INI)
+        generate_modsDB_ini(path_to_mods_db, force_overwrite=True)
+        gameID = os.path.basename(game_mod_dir)
+        set_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir, gameID=gameID)
+
+        # Now add our checked mods as active mods
         checked_mods = []
         for index in range(self.modsTableWidget.rowCount()):
+            # Get current mod and see if checked
             current_item = self.modsTableWidget.item(index, 0)
-            enabled_mod = get_enabled_mods(self.currentGameCombobox.currentText(), current_item.text(), return_titles=True)
-            if enabled_mod:
-                checked_mods.append(enabled_mod)
+            # If checked, add to our modsDB and append to our table
+            if current_item.checkState() == QtCore.Qt.CheckState.Checked:
+                has_been_enabled = enable_mod(self.currentGameCombobox.currentText(), current_item.text())
+                if has_been_enabled:
+                    checked_mods.append(current_item.text())
+                pass
             pass
 
 
         # For now, this ensures that everything at the top of the list is prioritized. We will make this a toggle later.
         checked_mods.reverse()
         save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
-
-        # Below is old behavior. We can now reorder mods in the mods window itself.
-        # Since we read column-by-column, the order is maintained from what the user reorders things to,
-        # and we no longer need an extra window
-
-        # This allows re-ordering mods to prevent collisions
-        # Pauses execution until window is closed
-        # TODO: Figure out how to make this optional
-        # Add config option for this?
-        # If no mods are checked or there's only one mod, just save anyway and skip the window.
-        # if not checked_mods or len(checked_mods) <= 1:
-        #     save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
-        #     return
-        #
-        # reorder = ReorderModsWindow(checked_mods)
-        # checked_mods.clear()
-        # if reorder.exec():
-        #     for index in range (reorder.listWidget.count()):
-        #         checked_mods.append(reorder.listWidget.item(index).text())
-        #     # 2. Send checked mods for parsing of their DBs
-        #     save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
-        #     return
-        #
-        # # If cancelled, don't save.
-        # print("Saving mods cancelled.\n")
+        self.refresh_modsUI()
         return
 
     def get_checked_mod(self, item):
@@ -259,29 +254,31 @@ class MainWindow(QMainWindow):
             # For QTableView, do NOT make anything checkable here.
             return
         if item.checkState() == QtCore.Qt.CheckState.Checked:
+            # REMOVED: handled at save_mods()
             # print(item.text() + " checked. Loading...")
             # Make this ASYNC
-            self.set_modbox_title(item.text() + " checked. Loading...")
+            # self.set_modbox_title(item.text() + " checked. Loading...")
             # Enable mod:
             # 1. Get mod path
             # 2. Generate DB
             # 3. Add to active mod list
 
-            # TODO: Instead of doing all that, save enabling mods at the end. Or at least save adding to the database until saved properly.
-            enable_mod(self.currentGameCombobox.currentText(), item.text())
+            # enable_mod(self.currentGameCombobox.currentText(), item.text())
             self.set_modbox_title(item.text() + " enabled.\n")
         else:
+            # REMOVED: handled at save_mods()
             # print(item.text() + " unchecked. Loading...")
             # Make this ASYNC
-            self.set_modbox_title(item.text() + " unchecked. Loading...")
-            disable_mod(self.currentGameCombobox.currentText(), item.text())
+            # self.set_modbox_title(item.text() + " unchecked. Loading...")
+            # disable_mod(self.currentGameCombobox.currentText(), item.text())
             self.set_modbox_title(item.text() + " disabled.\n")
             pass
         return
 
     def refresh_modsUI(self):
         # Check game title, then check mod entries for game
-        # TODO: rework this entirely
+        # TODO: rework this into a function
+        self.tabWidget.setTabEnabled(0, True)
         mod_entries, mod_info = populate_modlist(self.currentGameCombobox.currentText())
 
         # If game isn't found, repopulate game list and remove from our settings.ini
@@ -292,7 +289,6 @@ class MainWindow(QMainWindow):
             return
 
         self.set_modbox_title("Loading " + str(len(mod_entries)) + " mods...")
-        # print("Loading " + str(len(list_of_mods)) + " mods...")
 
         column_titles = ["Title", "Version", "Author", "Features"]
 
@@ -315,7 +311,7 @@ class MainWindow(QMainWindow):
             auth_item = QtWidgets.QTableWidgetItem(info["author"])
             auth_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
 
-            title_item.setCheckState(get_enabled_mods(self.currentGameCombobox.currentText(), title_item.text()))
+            title_item.setCheckState(is_mod_enabled(self.currentGameCombobox.currentText(), title_item.text()))
             self.modsTableWidget.blockSignals(True)
             self.modsTableWidget.setItem(row, 0, title_item)
             self.modsTableWidget.setItem(row, 1, ver_item)
