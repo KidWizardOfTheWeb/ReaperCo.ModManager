@@ -324,7 +324,7 @@ def match_mod(game_title, mod_title):
     return mod_GUID, mod_found_path, game_mod_dir
 
 # Only save to modsDB when "save" is pressed.
-def enable_mod(game_title, mod_title):
+def enable_mod(game_title, mod_title, return_GUID=False):
     try:
         mod_GUID, mod_found_path, game_mod_dir = match_mod(game_title, mod_title)
     except Exception as e:
@@ -395,16 +395,26 @@ def enable_mod(game_title, mod_title):
     # 2. If an old mod is active but the directory is gone from [Mods], it permeates and is a dead ID that needs to be removed.
     # 3. Mods can get out of order and update the wrong active mod. Fix list at the end of process if not ordered/starting at 0/
     # 3a. This is priority 1.
+    if return_GUID:
+        return True, mod_GUID
     return True
 
 # This is basically our decorator for merging and then moving files
 def save_mods_to_modded_game(active_mods, game_title):
-    print("Saving " + str(len(active_mods)) + " mods to the database...")
+    print("Saving " + str(len(active_mods)) + " mods to the database..." + "\n")
+    start_time = datetime.datetime.now()
+    print("Time started: " + str(start_time))
+
     # This should return a dictionary of ALL necessary mods and save it to gameID_MOD's database
     mod_iso_db_path, file_dict = merge_mod_dbs(active_mods, game_title)
+
     # Move ALL mod files to final place in gameID_MOD
     move_mod_files_to_final_place(mod_iso_db_path, file_dict)
-    print("Saved " + str(len(active_mods)) + " to the database.\n")
+
+    end_time = datetime.datetime.now()
+    print("Time ended: " + str(end_time))
+    print("Time spent saving: " + str(end_time - start_time) + "\n")
+    print("Saved " + str(len(active_mods)) + " to the database." + "\n")
 
 # Remove mods if not found in other functions
 def disable_mod(game_title, mod_title, game_mod_dir_override=None, GUID_override=None):

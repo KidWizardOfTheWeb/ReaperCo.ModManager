@@ -249,9 +249,11 @@ class MainWindow(QMainWindow):
             current_item = self.modsTableWidget.item(index, 0)
             # If checked, add to our modsDB and append to our table
             if current_item.checkState() == QtCore.Qt.CheckState.Checked:
-                has_been_enabled = enable_mod(self.currentGameCombobox.currentText(), current_item.text())
+                has_been_enabled, mod_GUID = enable_mod(self.currentGameCombobox.currentText(), current_item.text(), return_GUID=True)
                 if has_been_enabled:
-                    checked_mods.append(current_item.text())
+                    # Changed this to append GUIDs instead, so we can just filter those in order
+                    # checked_mods.append(current_item.text())
+                    checked_mods.append(mod_GUID)
                 pass
             pass
 

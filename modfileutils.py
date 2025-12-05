@@ -288,24 +288,19 @@ def get_game_ID(game_title):
 def merge_mod_dbs(active_mods, game_title):
     game_mod_dir = get_path_to_game_folder(game_title)
     gameID = os.path.basename(game_mod_dir)
+    stored_mods = get_config_option(MODSDB_INI,
+                                    path_to_config=game_mod_dir,
+                                    section_to_check="Mods",
+                                    return_keys=True,
+                                    return_values=True)
 
-    # Return all paths to mods in this directory
-    path_to_mods_db = os.path.join(game_mod_dir, MODSDB_INI)
-    list_of_mod_paths = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir,
-                                   return_full_path=True)
-    # list_of_mod_paths = get_config_option(MODSDB_INI, game_modsDB_path, "Mods", return_values=True)
-
-    # Now, find ALL checked mods
-    # mod_found_path returns all paths of mods that are valid
-    # Use these, append 'db.json' and read those, combine them
-    mod_found_path = []
-    for mod_path in list_of_mod_paths:
-        if os.path.basename(mod_path) in active_mods:
-            # We found it, we enable this one
-            mod_found_path.append(mod_path)
-
-            # If we found one to enable, regen the databases just in case files were updated
-            generate_file_DB_for_mod(mod_path, mod_path)
+    active_mod_found = []
+    for mod_key in active_mods:
+        # Use the GUID as our hashmap key to append the proper paths. This preserves order.
+        # Genuinely no idea how I didn't do this first, probably because I returned names instead of IDs in the main call.
+        mod_found = stored_mods[mod_key]
+        active_mod_found.append(mod_found)
+        generate_file_DB_for_mod(mod_found, mod_found)
 
     # Get ORIGINAL ISO db first
     original_iso_db = os.path.join(Path(game_mod_dir), Path(ORIGINAL_ISO_DIR.format(gameID)))
@@ -317,8 +312,7 @@ def merge_mod_dbs(active_mods, game_title):
 
     # Load all other dictionaries, OR them into the combined one
     for index in range(len(active_mods)):
-        with open(os.path.join(Path(mod_found_path[index]), DB_JSON), "r") as file:
-            # combined_file_dict.update(json.load(file))
+        with open(os.path.join(Path(active_mod_found[index]), DB_JSON), "r") as file:
             new_dict_to_add = json.load(file)
             # Get the keys of the dictionary, update that key in combined_file_dict
             new_dict_keys = new_dict_to_add.keys()
@@ -341,16 +335,13 @@ def merge_mod_dbs(active_mods, game_title):
 
 
 def move_mod_files_to_final_place(mod_iso_db, file_dict):
-    # Get file dict from... file
+    # Get file dict calculated from earlier
     combined_file_dict = file_dict
-    # combined_file_dict = {}
-    # with open(os.path.join(mod_iso_db, Path("db.json")), "r") as file:
-    #     combined_file_dict = json.load(file)
 
     # Go through every key (top-level directory), then every key-value[0] to get the file directory to move into gameID_MOD
 
     # This loop is heavily inefficient. Send help.
-    # Get top level directory, then filelist
+    # Get top level directory, then filelist.
     for directory, filelist in combined_file_dict.items():
         # Then get filename, then directory (filedata[0])
         # Use this to move.
@@ -360,7 +351,6 @@ def move_mod_files_to_final_place(mod_iso_db, file_dict):
 
         # Clear this directory first to avoid holdover files
         # Possibly find a way to detect mod files to remove? Add property to dict possibly?
-
         if os.path.exists(new_directory):
             shutil.rmtree(new_directory)
 
