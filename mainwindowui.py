@@ -5,6 +5,7 @@ import time
 import threading
 
 import richpresence
+from addmodoptions import AddModFromOptionsWindow
 
 from mainwindowfunc import * # Contains our functionality so we can read this file properly
 from constants import * # Contains our paths
@@ -15,8 +16,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QCom
 
 from modfileutils import get_path_to_game_folder
 from addmodui import AddModWindow
-
-
+from warningui import WarningWindow
 
 
 # This class will handle our multithreading
@@ -101,8 +101,9 @@ class MainWindow(QMainWindow):
         self.openDolphinPushbutton.clicked.connect(self.open_directory)
 
         # BOTTOM ROW OF BUTTONS
-        self.addModButton.clicked.connect(self.create_mod)
+        self.addModButton.clicked.connect(self.install_mod)
         self.refreshListButton.clicked.connect(self.refresh_modsUI)
+        self.compileModsButton.clicked.connect(self.compile_mods)
 
         # SAVE BUTTONS
         self.saveModsPushbutton.clicked.connect(self.save_mods)
@@ -132,6 +133,8 @@ class MainWindow(QMainWindow):
         # MAKE SURE EVERYTHING IS HOOKED BEFORE CANCELLING FILLING THESE OUT
         if self.currentGameCombobox.count() <= 1:
             # There's no games here, switch the tab to settings and ignore the rest of init
+            # dialog = WarningWindow(self, "No mods or games! Add a game with the combobox.")
+            # dialog.exec()
             print("No mods or games! Add a game with the combobox.")
             self.tabWidget.setTabEnabled(0, False)
             self.tabWidget.setCurrentIndex(1)
@@ -139,6 +142,8 @@ class MainWindow(QMainWindow):
 
         if not mod_info:
             # There's no mods here, don't fill out mod list
+            # dialog = WarningWindow(self, "No mods! Add some mods with the \"Add mod\" button on the mods screen.")
+            # dialog.exec()
             print("No mods! Add some mods with the \"Add mod\" button on the mods screen.")
             return
 
@@ -174,6 +179,14 @@ class MainWindow(QMainWindow):
     #     self.refresh_modsUI()
     #     pass
 
+    def compile_mods(self):
+        pass
+        # dialog = WarningWindow(self)
+        # if dialog.exec():
+        #     print("!")
+        # else:
+        #     print("...")
+
     def toggle_checkbox_settings(self, checked):
         save_checkbox_settings(self.sender().text(), checked)
         pass
@@ -183,27 +196,27 @@ class MainWindow(QMainWindow):
         pass
 
     # Adds mods
-    def create_mod(self):
-        create_window = AddModWindow()
-        if create_window.exec():
-            # Get ALL relevant details from window here, create new mod dirs as needed
+    def install_mod(self):
+        install_options_window = AddModFromOptionsWindow()
+        if install_options_window.exec():
+            # Handle options
+            if install_options_window.createModRadioButton.isChecked():
+                create_mod_processing(self.currentGameCombobox.currentText())
 
-            new_mod_data = {
-                "Mod Title": create_window.modTitleBox.toPlainText(),
-                "Description": create_window.descBox.toPlainText(),
-                "Version": create_window.versionBox.toPlainText(),
-                "Author": create_window.authorBox.toPlainText(),
-                "Create Sys": create_window.createSysCheckbox.isChecked(),
-                "Create Files": create_window.createFilesCheckbox.isChecked(),
-                "Open Folder": create_window.openFolderCheckbox.isChecked()
-            }
+            if install_options_window.installFolderRadioButton.isChecked():
+                path_to_directory = QFileDialog.getOpenFileName(self, caption="Select Mod Zip archive")
+                # Ensure we have a path here, otherwise do nothing.
+                if path_to_directory[0]:
+                    install_mod_by_folder(self.currentGameCombobox.currentText(), path_to_directory[0])
+                pass
 
-            create_mod_processing(new_mod_data, self.currentGameCombobox.currentText())
+            if install_options_window.installArchiveRadioButton.isChecked():
+                # path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Mod Folder")
+                # install_mod_by_folder(self.currentGameCombobox.currentText(), path_to_directory)
+                pass
+
             self.refresh_modsUI()
             return
-
-        # If cancelled, don't save.
-
         pass
 
     # Handles text display for info
@@ -318,6 +331,8 @@ class MainWindow(QMainWindow):
             self.modsTableWidget.setItem(row, 2, auth_item)
             self.modsTableWidget.blockSignals(False)
             row += 1
+
+        # Note: move this modbox title set somewhere else, so I can show how many are saved
         print("Loaded " + str(len(mod_entries)) + " mods.\n")
         self.set_modbox_title("Loaded " + str(len(mod_entries)) + " mods.\n")
         pass

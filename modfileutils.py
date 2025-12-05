@@ -271,20 +271,21 @@ def get_path_to_game_folder(game_title):
 
     return game_mod_dir
 
+# Get game ID (probably little use for now since we can use the basename of the game folder)
+def get_game_ID(game_title):
+    game_dict = get_config_option(SETTINGS_INI, "config", "GameList", return_keys=True, return_values=True)
+
+    # Match the key-value to current_game
+    if not game_dict:
+        return None
+
+    gameID = game_dict[game_title]
+
+    return gameID
 
 # Merge ALL databases into final db.json for modded game
 # Use base game ISO db as the original dict to add to
 def merge_mod_dbs(active_mods, game_title):
-    # Get our general mod directory location
-    # base_mod_dir = get_config_option(SETTINGS_INI, "config", "LauncherLoader", "modsdir")
-    #
-    # # Get all games and then gameID from this dictionary
-    # list_of_games = get_config_option(SETTINGS_INI, "config", "GameList", return_keys=True, return_values=True)
-    # gameID = list_of_games[game_title]
-    #
-    # # Combine the base directory + gameID to get to the main game directory
-    # game_mod_dir = os.path.join(Path(base_mod_dir), Path(gameID))
-
     game_mod_dir = get_path_to_game_folder(game_title)
     gameID = os.path.basename(game_mod_dir)
 

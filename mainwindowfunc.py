@@ -2,12 +2,12 @@ import datetime
 import os.path
 import json
 import sys
-# import tkinter
-# from tkinter import filedialog
 import shutil
+import zipfile
 
 from PyQt6 import QtCore, QtWidgets
 
+from addmodui import AddModWindow
 from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, DB_INI, MOD_ISO_DIR, DOLPHIN_EXE, \
     MODINFO_INI
 from filemanagerutils import get_config_option, set_config_option, generate_modsDB_ini, generate_modInfo_ini_file
@@ -15,6 +15,11 @@ from modfileutils import generate_file_DB_for_mod, set_modsDB, get_modsDB, merge
     create_mod_dirs, get_path_to_game_folder
 import subprocess
 from pathlib import Path, PurePath, WindowsPath
+
+from PyQt6.QtWidgets import QFileDialog
+
+from warningui import WarningWindow
+
 
 def check_paths():
     path_to_dolphin = get_config_option(SETTINGS_INI,
@@ -28,7 +33,18 @@ def check_paths():
 
     if not path_to_dolphin or not path_to_mods:
         # Error window here, print what's missing, end function
-        print("Error here! Path to dolphin or path to mods missing.")
+        missing_str = "Error: "
+        if not path_to_dolphin and not path_to_mods:
+            missing_str += "Path to dolphin and path to mods missing.\n"
+        elif not path_to_dolphin:
+            missing_str += "Path to Dolphin missing.\n"
+        elif not path_to_mods:
+            missing_str += "Path to mods folder missing.\n"
+
+        missing_str += "Go to the settings tab and fill out the required fields in \"Game and Mod Loader Settings.\""
+
+        dialog = WarningWindow(warning_text=missing_str)
+        dialog.exec()
         return None, None
     
     return path_to_dolphin, path_to_mods
@@ -41,6 +57,7 @@ def populate_modlist(game_title):
     game_dict = get_config_option(SETTINGS_INI, "config", "GameList", return_keys=True, return_values=True)
 
     # Match the key-value to game_title
+    # Note: this basically should be entirely defunct/useless now since we lock the mods tab when there are no games, or we display no mods when there aren't any.
     if not game_dict:
         return ["No mods. Open a game and add one!"], None
 
@@ -182,30 +199,10 @@ def add_new_game_from_dolphin(path_to_new_game):
 
     path_to_dolphin, path_to_mods = check_paths()
 
-    # path_to_dolphin = get_config_option(SETTINGS_INI,
-    #                                     "config",
-    #                                       "LauncherLoader",
-    #                                       "dolphindir")
-    # path_to_mods = get_config_option(SETTINGS_INI,
-    #                                  "config",
-    #                                    "LauncherLoader",
-    #                                    "modsdir")
-
     if not path_to_dolphin or not path_to_mods:
     #     # Error window here, print what's missing, end function
     #     print("Error here! Path to dolphin or path to mods missing.")
         return
-
-
-    # Open file dialog from 
-    # root = tkinter.Tk()
-    # root.withdraw()  # prevents an empty tkinter window from appearing
-
-    # Return dol file selected
-    # path_to_new_game = Path(filedialog.askopenfilename())
-    # The original function
-    # path_to_new_game = filedialog.askopenfilename()
-    # root.withdraw()
 
     if not path_to_new_game:
         return None, None
@@ -500,7 +497,7 @@ def disable_mod(game_title, mod_title, game_mod_dir_override=None, GUID_override
                               option_to_write=str('activemod' + str(active_mod_number)),
                               new_value=ID)
 
-            active_mod_number+=1
+            active_mod_number += 1
 
     # print(mod_title + " disabled.\n")
     pass
@@ -567,27 +564,18 @@ def start_dolphin_game(game_title):
     path_to_dolphin, path_to_mods = check_paths()
 
     if not path_to_dolphin or not path_to_mods:
-        # Error window here, print what's missing, end function
-        # print("Error here! Path to dolphin or path to mods missing.")
         return
 
-
-    # Get what games are in our game list
-    # By getting the keys, we can track our folders because of our schema (indeed)
-    game_dict = get_config_option(SETTINGS_INI, "config", "GameList", return_keys=True, return_values=True)
-
-    # Match the key-value to current_game
-    if not game_dict:
-        return ["No mods. Open a game and add one!"]
-
-    gameID = game_dict[game_title]
-
+    game_mod_dir = get_path_to_game_folder(game_title)
+    gameID = os.path.basename(game_mod_dir)
     # Return dol file selected
     # This should hopefully exist
-    path_to_game_dol = os.path.join(Path(path_to_mods), Path(gameID), Path(MOD_ISO_DIR.format(gameID)), Path("sys"), Path("main.dol"))
+    path_to_game_dol = os.path.join(Path(game_mod_dir), Path(MOD_ISO_DIR.format(gameID)), Path("sys"), Path("main.dol"))
 
     if not os.path.exists(path_to_game_dol):
         print("Error here! Path to dol has no sys folder.")
+        dialog = WarningWindow(warning_text="Error here! Path to dol has no sys folder.")
+        dialog.exec()
         return
 
     # get dolphin location, subproc and detach
@@ -624,18 +612,32 @@ def start_dolphin_game(game_title):
         return
 
 
-def create_mod_processing(new_mod_data, game_title):
-    game_dict = get_config_option(SETTINGS_INI, "config", "GameList", return_keys=True, return_values=True)
+def create_mod_processing(game_title):
+    create_window = AddModWindow()
+    if create_window.exec():
+        # Get ALL relevant details from window here, create new mod dirs as needed
+        new_mod_data = {
+            "Mod Title": create_window.modTitleBox.toPlainText(),
+            "Description": create_window.descBox.toPlainText(),
+            "Version": create_window.versionBox.toPlainText(),
+            "Author": create_window.authorBox.toPlainText(),
+            "Create Sys": create_window.createSysCheckbox.isChecked(),
+            "Create Files": create_window.createFilesCheckbox.isChecked(),
+            "Open Folder": create_window.openFolderCheckbox.isChecked()
+        }
 
-    # Match the key-value to current_game
-    if not game_dict:
-        return ["No mods. Open a game and add one!"]
+        # Check for if the user at least created a mod title so the folder can be created
+        if not new_mod_data["Mod Title"]:
+            dialog = WarningWindow(warning_text="Cannot create mod, Mod Title is required to create a mod!")
+            if dialog.exec():
+                create_mod_processing(game_title)
+            else:
+                return
+    else:
+        return
 
-    gameID = game_dict[game_title]
-
-    # Search the main mod directory for the main folder for this game
-    game_mod_dir = get_config_option(SETTINGS_INI, "config", "LauncherLoader", "modsdir")
-    game_mod_dir = os.path.join(Path(game_mod_dir), gameID)
+    game_mod_dir = get_path_to_game_folder(game_title)
+    gameID = os.path.basename(game_mod_dir)
 
     # Get the modsDB.ini file and check/add to mods section
     path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID), Path(new_mod_data["Mod Title"])))
@@ -722,6 +724,7 @@ def save_checkbox_settings(checkbox_text, is_checked):
                           option_to_write="createDBForFinalOutput",
                           new_value=str(state_to_write))
 
+
 def settings_checkbox_init():
     is_checked = int(get_config_option(SETTINGS_INI,
                                           "config",
@@ -731,3 +734,28 @@ def settings_checkbox_init():
     if is_checked:
         return True
     return False
+
+
+def install_mod_by_folder(game_title, path_to_folder):
+    path_to_dolphin, path_to_mods = check_paths()
+    if not path_to_dolphin or not path_to_mods:
+        return
+
+    game_mod_dir = get_path_to_game_folder(game_title)
+    gameID = os.path.basename(game_mod_dir)
+    path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID)))
+
+    # Hit the unzip, chewy!
+    # Make sure to set the target directory as the mods folder first though...
+    # TODO: Make sure we don't just overwrite existing mods. Somehow...
+    # For now though, it will.
+    with zipfile.ZipFile(path_to_folder, "r") as zip_ref:
+        zip_ref.extractall(path_to_mods_folder)
+
+    # If successful, tell them it was lol.
+
+    zip_name = os.path.basename(path_to_folder)
+
+    dialog = WarningWindow(title= "Success!", warning_text= zip_name + " unzipped successfully!")
+    dialog.exec()
+    pass
