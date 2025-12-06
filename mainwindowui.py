@@ -6,6 +6,7 @@ import threading
 
 import richpresence
 from addmodoptions import AddModFromOptionsWindow
+from compilemodoptions import CompileModOptionsWindow
 
 from mainwindowfunc import * # Contains our functionality so we can read this file properly
 from constants import * # Contains our paths
@@ -180,12 +181,31 @@ class MainWindow(QMainWindow):
     #     pass
 
     def compile_mods(self):
+        compile_options_window = CompileModOptionsWindow()
+        if compile_options_window.exec():
+            # Handle options
+            if compile_options_window.zipModsRadioButton.isChecked():
+                # Get all active mod folders and zip them
+                path_to_directory = QFileDialog.getSaveFileName(self, caption="Save Mod archive")
+                # Ensure we have a path here, otherwise do nothing.
+                if path_to_directory[0]:
+                    self.save_mods(export_mods=path_to_directory[0])
+
+            if compile_options_window.createISORadioButton.isChecked():
+                # path_to_directory = QFileDialog.getOpenFileName(self, caption="Select Mod Zip archive")
+                # # Ensure we have a path here, otherwise do nothing.
+                # if path_to_directory[0]:
+                #     install_mod_by_folder(self.currentGameCombobox.currentText(), path_to_directory[0])
+                pass
+
+            if compile_options_window.createRVLPatchRadioButton.isChecked():
+                # path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Mod Folder")
+                # install_mod_by_folder(self.currentGameCombobox.currentText(), path_to_directory)
+                pass
+
+            self.refresh_modsUI()
+            return
         pass
-        # dialog = WarningWindow(self)
-        # if dialog.exec():
-        #     print("!")
-        # else:
-        #     print("...")
 
     def toggle_checkbox_settings(self, checked):
         save_checkbox_settings(self.sender().text(), checked)
@@ -195,7 +215,7 @@ class MainWindow(QMainWindow):
         set_play_behavior(self.sender().text(), checked)
         pass
 
-    # Adds mods
+    # Installs mods
     def install_mod(self):
         install_options_window = AddModFromOptionsWindow()
         if install_options_window.exec():
@@ -230,7 +250,7 @@ class MainWindow(QMainWindow):
         start_dolphin_game(self.currentGameCombobox.currentText())
         pass
 
-    def save_mods(self):
+    def save_mods(self, export_mods=None):
         # Save ALL activated mod databases here
 
         # So instead of getting enabled mods, get the mods that are checked, from top to bottom
@@ -261,6 +281,8 @@ class MainWindow(QMainWindow):
         # For now, this ensures that everything at the top of the list is prioritized. We will make this a toggle later.
         checked_mods.reverse()
         save_mods_to_modded_game(checked_mods, self.currentGameCombobox.currentText())
+        if export_mods:
+            zip_mods_processing(checked_mods, self.currentGameCombobox.currentText(), Path(export_mods))
         self.refresh_modsUI()
         return
 

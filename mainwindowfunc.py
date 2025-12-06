@@ -763,9 +763,53 @@ def install_mod_by_folder(game_title, path_to_folder):
         zip_ref.extractall(path_to_mods_folder)
 
     # If successful, tell them it was lol.
-
     zip_name = os.path.basename(path_to_folder)
 
     dialog = WarningWindow(title= "Success!", warning_text= zip_name + " unzipped successfully!")
     dialog.exec()
+    pass
+
+def zip_mods_processing(active_mods, game_title, path_to_zip):
+    game_mod_dir = get_path_to_game_folder(game_title)
+
+    # Get active mod paths
+    stored_mods = get_config_option(MODSDB_INI,
+                                    path_to_config=game_mod_dir,
+                                    section_to_check="Mods",
+                                    return_keys=True,
+                                    return_values=True)
+
+    active_mod_found = []
+    for mod_key in active_mods:
+        # Use the GUID as our hashmap key to append the proper paths. This preserves order.
+        # Genuinely no idea how I didn't do this first, probably because I returned names instead of IDs in the main call.
+        mod_found = stored_mods[mod_key]
+        active_mod_found.append(mod_found)
+
+
+    # Now that we've gotten all paths, zip 'em and ask the user where should they go
+    try:
+        # We use a tmp directory for this in cwd
+        temp_dir = os.path.join(os.getcwd(), Path(".tmp"))
+        os.makedirs(temp_dir, exist_ok=True)
+
+        for mod in active_mod_found:
+            # Copy all active mods to temp so we can zip this with the proper name
+            try:
+                sub_dir = os.path.join(Path(temp_dir), os.path.basename(mod))
+                shutil.copytree(Path(mod), Path(sub_dir), dirs_exist_ok=True)
+            except Exception as e:
+                print(e)
+
+        # Create the archive in the current directory from the working directory
+        # Ok for future me to save headaches, I'm gonna detail this for you since the internet failed me on this one.
+        # Param 1: The place the zip will go once saved (this feels backwards).
+        # Param 2: File type.
+        # Param 3: The folder to zip (they call this the "root").
+        shutil.make_archive(path_to_zip, 'zip', temp_dir)
+
+        # Clean up the temporary directory
+        shutil.rmtree(temp_dir)
+    except Exception as e:
+        print(e)
     pass
