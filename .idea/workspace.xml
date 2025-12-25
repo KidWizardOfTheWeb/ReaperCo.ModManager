@@ -4,11 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Heavily optimized saving mods with hashing, fixed layering system oversight ordering alphabetically instead">
-      <change afterPath="$PROJECT_DIR$/compilemodoptions.py" afterDir="false" />
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Added compilation options, zipping active mods to archive">
+      <change afterPath="$PROJECT_DIR$/aboutwindow.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/windowUIFiles/about.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainwindowfunc.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowfunc.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainwindowui.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/addmodfromoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/windowUIFiles/addmodfromoptions.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/compilemodoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/windowUIFiles/compilemodoptions.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/mainwindow.ui" beforeDir="false" afterPath="$PROJECT_DIR$/windowUIFiles/mainwindow.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +63,7 @@
 }</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$USER_HOME$/AppData/Local/Programs/Python/Python314/Lib/asyncio/base_events.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Programs/Python/Python314/Lib/zipfile/__init__.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/mainwindowui.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/modfileutils.py" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -84,7 +88,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
-    "settings.editor.selected.configurable": "reference.idesettings.debugger.python"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RunManager" selected="Python.MainRun">
@@ -146,7 +150,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-f69e5c277ee4-cbfc7b97e6b2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-252.27397.106" />
+        <option value="bundled-python-sdk-7bb8055f9097-cbfc7b97e6b2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-252.28238.29" />
       </set>
     </attachedChunks>
   </component>
@@ -326,10 +330,41 @@
       <option name="project" value="LOCAL" />
       <updated>1764957842935</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Added compilation options, zipping active mods to archive">
+      <option name="closed" value="true" />
+      <created>1764993529792</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1764993529792</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Added compilation options, zipping active mods to archive">
+      <option name="closed" value="true" />
+      <created>1764993651010</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1764993651010</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="master" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
@@ -340,7 +375,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="fork/NullPTrException1/macos_dev" />
+                        <option value="master" />
                       </list>
                     </value>
                   </entry>
@@ -374,7 +409,9 @@
     <MESSAGE value="Added RPC back" />
     <MESSAGE value="Added options for adding mods" />
     <MESSAGE value="Heavily optimized saving mods with hashing, fixed layering system oversight ordering alphabetically instead" />
-    <option name="LAST_COMMIT_MESSAGE" value="Heavily optimized saving mods with hashing, fixed layering system oversight ordering alphabetically instead" />
+    <MESSAGE value="One line cleanup from last commit" />
+    <MESSAGE value="Added compilation options, zipping active mods to archive" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added compilation options, zipping active mods to archive" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -391,7 +428,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>733</line>
+          <line>732</line>
           <option name="timeStamp" value="100" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -401,22 +438,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>298</line>
+          <line>307</line>
           <option name="timeStamp" value="214" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>479</line>
+          <line>478</line>
           <option name="timeStamp" value="231" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>174</line>
+          <line>173</line>
           <option name="timeStamp" value="267" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>427</line>
+          <line>436</line>
           <option name="timeStamp" value="270" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -451,12 +488,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>750</line>
+          <line>749</line>
           <option name="timeStamp" value="303" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>762</line>
+          <line>761</line>
           <option name="timeStamp" value="304" />
         </line-breakpoint>
       </breakpoints>

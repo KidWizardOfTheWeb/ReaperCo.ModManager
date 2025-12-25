@@ -5,6 +5,7 @@ import time
 import threading
 
 import richpresence
+from aboutwindow import AboutWindow
 from addmodoptions import AddModFromOptionsWindow
 from compilemodoptions import CompileModOptionsWindow
 
@@ -69,6 +70,8 @@ class MainWindow(QMainWindow):
 
         # THREAD POOL
         self.threadpool = QThreadPool()
+
+        self.aboutButton.clicked.connect(self.about_window)
 
         # SETTINGS BUTTONS - make sure to change these on load depending on the settings toggles
         self.launchDolphinPlayRadiobutton.setChecked(check_play_behavior(self.launchDolphinPlayRadiobutton.text()))
@@ -205,6 +208,12 @@ class MainWindow(QMainWindow):
 
             self.refresh_modsUI()
             return
+        pass
+
+    # About window
+    def about_window(self):
+        about_window = AboutWindow()
+        about_window.exec()
         pass
 
     def toggle_checkbox_settings(self, checked):

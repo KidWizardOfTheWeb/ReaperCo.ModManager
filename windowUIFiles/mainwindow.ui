@@ -293,7 +293,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Uninstall Mod Loader</string>
+                 <string>Uninstall Mod Loader (WIP, non-functional)</string>
                 </property>
                </widget>
               </item>
@@ -395,7 +395,7 @@
               <item>
                <widget class="QLabel" name="pluginsDirLabel">
                 <property name="text">
-                 <string>Plugins Directory:</string>
+                 <string>Plugins Directory (WIP):</string>
                 </property>
                </widget>
               </item>
@@ -456,7 +456,7 @@
             <number>0</number>
            </property>
            <item row="3" column="0">
-            <widget class="QPushButton" name="pushButton_5">
+            <widget class="QPushButton" name="aboutButton">
              <property name="text">
               <string>About R.C.M.M</string>
              </property>
@@ -468,21 +468,21 @@
               <item row="0" column="0">
                <widget class="QCheckBox" name="checkBox_2">
                 <property name="text">
-                 <string>Automatically check for R.C.M.M. updates</string>
+                 <string>Automatically check for R.C.M.M. updates (WIP, non-functional)</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="0">
                <widget class="QCheckBox" name="checkBox_3">
                 <property name="text">
-                 <string>Automatically check for mod loader updates</string>
+                 <string>Automatically check for mod loader updates (WIP, non-functional)</string>
                 </property>
                </widget>
               </item>
               <item row="2" column="0">
                <widget class="QCheckBox" name="checkBox_4">
                 <property name="text">
-                 <string>Automatically check for mod updates</string>
+                 <string>Automatically check for mod updates (WIP, non-functional)</string>
                 </property>
                </widget>
               </item>
@@ -496,7 +496,7 @@
               <item row="4" column="0">
                <widget class="QCheckBox" name="checkBox_6">
                 <property name="text">
-                 <string>Keep R.C.M.M. open after launch</string>
+                 <string>Keep R.C.M.M. open after launch (WIP, non-functional)</string>
                 </property>
                </widget>
               </item>
@@ -506,7 +506,7 @@
            <item row="2" column="0">
             <widget class="QPushButton" name="pushButton_4">
              <property name="text">
-              <string>Check for Updates</string>
+              <string>Check for Updates (WIP, non-functional)</string>
              </property>
             </widget>
            </item>
