@@ -4,44 +4,22 @@ Reaper Co. Mod Manager - R.C.M.M.
 
 A Mod Manager for Dolphin Emulator Games, inspired by [HedgeModManager](https://github.com/thesupersonic16/HedgeModManager).
 
-## Prerequisites
-You must have these installed to run the program until a binary is created:
-- [Python 3.14](https://www.python.org/downloads/) or above.
-- The modules included in [requirements.txt](https://github.com/KidWizardOfTheWeb/ReaperCo.ModManager/blob/master/requirements.txt).
-- A build of [Dolphin](https://dolphin-emu.org/), the GameCube/Wii emulator. BUILD MUST INCLUDE `dolphintool.exe`.
+## Installation Guide
 
-## Installation instructions
-1. Clone the repository into any folder of choice using git.
-```
-git clone https://github.com/KidWizardOfTheWeb/ReaperCo.ModManager
-```
-
+1. Download the latest release from the releases folder.
 2. Create a folder (preferably in your Dolphin build directory). This will house all of your extracted games and mods.
 
-<img width="638" height="589" alt="image" src="https://github.com/user-attachments/assets/96b9f066-d60b-4318-86e5-d145404ccc9f" />
-<br></br>
+<img width="666" height="240" alt="image" src="https://github.com/user-attachments/assets/aaf9b13d-07ba-4a14-b2e5-04d4fd8ae3f0" />
 
-3. Using your command line interface of choice, run the following commands to get to the installation and set up the program:
-```bash
-cd "path\to\your\cloned\repository"
-pip install -r requirements.txt
-```
-
-Then in the same directory, run the program with the following command:
-```python
-py main.py
-```
-
-
-4. In the settings tab, use the triple dot buttons to set your directories to the following:
+4. Open your downloaded release and launch the included executable.
+5. In the settings tab, use the triple dot buttons to set your directories to the following:
 - **Mods Directory** - Set to the folder created in step 2.
 - **Dolphin Directory** - Set to the root of your Dolphin build (the folder where `dolphin.exe`/`dolphintool.exe` exists).
 - **Modules Directory** - WIP, non-functional for now. In the future, we will support external scripts being connected to RCMM for any purpose.
 
-<img width="789" height="363" alt="image" src="https://github.com/user-attachments/assets/a5e4dccf-2d26-43f1-8ff9-5138f19a3c46" />
-<br></br>
+<img width="785" height="229" alt="image" src="https://github.com/user-attachments/assets/54aaf583-f797-4407-b3a3-2fae3887ffe8" />
 
-5. Now, set up some games!
+Now, set up some games!
 
 ## How do I add games?
 Unlike Hedge Mod Manager, `R.C.M.M` does not scan all directories for available games, as you may not want hundreds of games to be extracted and/or have mods at once.
@@ -62,34 +40,37 @@ To find out what your game ID is, check the properties of the game in Dolphin it
 
 4. When you look at `R.C.M.M` after this process finishes, the dropdown at the bottom will now read the title of your added game. You can now go back to this game's mod list by clicking it in the dropdown in the future.
 
-<img width="792" height="815" alt="image" src="https://github.com/user-attachments/assets/d58e2a10-d3cb-4528-8993-547f5d717477" />
-<br></br>
+<img width="793" height="826" alt="image" src="https://github.com/user-attachments/assets/782bba2e-43ad-4bdf-b913-89fd27db29f9" />
 
-5. Now you can add mods!
+Now you can add mods!
 
 ## How do I add mods?
-For now, adding compatible mods is a manual process. However, adding mods are as easy as dragging and dropping files!
+To add mods, press the `Add Mod` button on the mods tab to spawn this window.
 
-1. In your Mods Directory -> folder corresponding with the game you want to add mods to (remember, check game ID), there's a folder called `gameID_Mods` (gameID = the actual ID of the game). 
+<img width="372" height="233" alt="image" src="https://github.com/user-attachments/assets/670d6579-b501-453a-9cfd-6a4e86cc3a00" />
+
+You can import a mod using `Installing from a zip folder` to import a zip that was created by RCMM. It will be unzipped and automatically added to your mods once a zip is selected.
+
+To create a mod, use `Make a new mod`. **You must enter at least a title for your mod to be created.**
+
+If you've modified files like `main.dol` to add new code to a game or modified any files that usually would go in the `sys` folder, enable `Create sys folder`. Place your new `main.dol` in this folder.
+This is mainly for games with mods that add new functionality.
+
+If you've modified game files that you usually would place in the `files` folder (music files like ADXs, model files, etc.), enable `Create files folder`. Place your files that would usually replace game files in here.
+This is for games that may change things such as models, animations, music, etc.
+
+Note: Enabling "Open Folder" will immediately spawn a file explorer process of where your mod was created.
+
+<img width="390" height="424" alt="image" src="https://github.com/user-attachments/assets/92c3b390-3aeb-477b-97fe-1d40091d0bf9" />
+
+In your Mods Directory -> folder corresponding with the game you want to add mods to (remember, check game ID), there's a folder called `gameID_Mods` (gameID = the actual ID of the game). 
 
 <img width="709" height="245" alt="image" src="https://github.com/user-attachments/assets/7e09c157-42e3-4493-af03-3e8c83daf6d7" />
 <br></br>
 
 2. Adding folders in this directory will create a mod for your game. Name the folder whatever you want your mod to be named.
 
-<img width="824" height="241" alt="image" src="https://github.com/user-attachments/assets/2d9403c3-3f3a-4ced-9d5c-c59381f3ccfb" />
-<br></br>
-
-3. To actually add files to your mod, check what kind of files you've modified so far.
-
-If you've modified files like `main.dol` to add new code to a game or modified any files that usually would go in the `sys` folder, add a folder inside your newly created mod folder named `sys`. Place your new `main.dol` in this folder.
-This is mainly for games with mods that add new functionality.
-
-If you've modified game files that you usually would place in the `files` folder (music files like ADXs, model files, etc.), add a folder inside your newly created mod folder named `files`. Place your files that would usually replace game files in here.
-This is for games that may change things such as models, animations, music, etc.
-
-<img width="853" height="239" alt="image" src="https://github.com/user-attachments/assets/a48a2a70-49c7-4f26-9db7-23e002df4e2a" />
-<br></br>
+<img width="804" height="321" alt="image" src="https://github.com/user-attachments/assets/b9fca221-6aa2-4f2b-b19e-7cfea3368b96" />
 
 4. Once you've finished adding files, re-open or press `Refresh List` in the mods tab in `R.C.M.M`. You should now see your new mods in the list on the mods page!
 
@@ -98,32 +79,58 @@ Turning mods on/off is as simple as choosing your game, clicking the checkboxes,
 
 1. Select your added game from the dropdown list.
 
-2. Check/uncheck the mods you want to use for your modded game. 
+2. Check/uncheck the mods you want to use for your modded game.
 
-<img width="592" height="666" alt="image" src="https://github.com/user-attachments/assets/d8187872-0b0d-4c82-92b6-bd372e3e1e46" />
-<br></br>
-
-3. Press the save button. If you have two or more selected, this will open up a menu that will allow you to reorder your mods in terms of priority with drag/drop.
-
-**You can skip this step by pressing "OK" if none of your mods have conflicting files, as this is for power users/mod priority fixes.** 
-
-If you know your mods have conflicting files already, you can reorder them here.
 The list goes in terms of least prioritized -> most prioritized from top to bottom. For mods that you are ok with overwriting, place them towards the top. Mods are written to your game copy from top -> bottom of this list.
 
-<img width="587" height="682" alt="image" src="https://github.com/user-attachments/assets/713988a0-dce2-44f1-bf77-158a7aa2ae37" />
-<br></br>
+<img width="797" height="374" alt="image" src="https://github.com/user-attachments/assets/9ef5c16f-ef07-411f-90f8-5bf5bd21598a" />
+
+3. Press the save button to save your changes. 
 
 4. Once saved, you can now start your game!
 
-Your modded game copy is located in the `gameID_MOD` folder in your `gameID` directory.
+Your modded game copy is located in the `gameID_MOD` folder in your `gameID` directory. **It is highly suggested to set a path to the `.dol` file in the `sys` folder of `gameID_MOD` in Dolphin Emulator in order to play your modified copy with others, or without launching the mod manager**.
 
 <img width="704" height="251" alt="image" src="https://github.com/user-attachments/assets/9673e14b-f3c6-41aa-8e2f-b8daa4c423a1" />
 <br></br>
 
 Options to start the game:
-1. Press "Save and Play" in `R.C.M.M` to save the current mods and instantly start Dolphin.
-2. Drag the `main.dol` file in the `gameID_MOD` folder on top of Dolphin.
+1. Press "Save and Play" in `R.C.M.M` to save the current mods and instantly start Dolphin. You can start the game without the main Dolphin window or with it, depending on the settings page option selected here.
+
+<img width="792" height="358" alt="image" src="https://github.com/user-attachments/assets/b04ca941-91f7-46c8-83c0-d9e03c4b79fc" />
+
+2. Drag the `main.dol` file in the `gameID_MOD` folder on top of Dolphin to start the game.
 3. Set a path to the `sys` directory in the `gameID_MOD` folder in your Dolphin path configuration to have it show up in your launcher.
+
+
+
+## For Developers
+### Prerequisites
+- [Python 3.14](https://www.python.org/downloads/) or above.
+- The modules included in [requirements.txt](https://github.com/KidWizardOfTheWeb/ReaperCo.ModManager/blob/master/requirements.txt).
+- A build of [Dolphin](https://dolphin-emu.org/), the GameCube/Wii emulator. BUILD MUST INCLUDE `dolphintool.exe`.
+
+### Development instructions
+1. Clone the repository into any folder of choice using git.
+```
+git clone https://github.com/KidWizardOfTheWeb/ReaperCo.ModManager
+```
+
+2. Create a folder (preferably in your Dolphin build directory). This will house all of your extracted games and mods.
+
+<img width="638" height="589" alt="image" src="https://github.com/user-attachments/assets/96b9f066-d60b-4318-86e5-d145404ccc9f" />
+<br></br>
+
+3. Using your command line interface of choice, run the following commands to get to the installation and set up the program:
+```bash
+cd "path\to\your\cloned\repository"
+pip install -r requirements.txt
+```
+
+Then in the same directory, run the program with the following command:
+```python
+py main.py
+```
 
 
 ## Acknowledgements & Credits
