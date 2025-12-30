@@ -119,26 +119,53 @@ def get_modsDB(modsDB_data, path_to_gamemod_folder, return_full_path=False, retu
 
 # Takes a file path and generates dictionary data for all files in from the given root downwards
 # IF THE path_to_db == NONE, STORE THE DB FILES AT THE ROOT POSITION (add wrapper func with @)
-def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None):
+def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None, game_ID=None):
 
     # Create main dict to store all folders
     output_dict = {}
 
-    # TODO: Update later so it's not hardcoded to these two only (this is based off of Sonic Riders GC setup)
-    files_dict = {}
-    sys_dict = {}
-
     # We will store this hashmap with the mod.
-    # TODO: If it does exist already, only add new entries (can just do with "or" operation)
     for dirpath, dirnames, filenames in os.walk(path_to_mod_root, topdown=True):
 
-        # TODO: Update later so it's not hardcoded to these two folders only
-        # GC ISOs follow this format, Wii ISOs have partitions and update folders so we need to add support for those
-        # Only add files from these directories
-        inFilesPath = os.path.basename(dirpath) == 'files'
-        inSysPath = os.path.basename(dirpath) == "sys"
+        curr_dir_basename = os.path.basename(dirpath)
 
-        if (inFilesPath or inSysPath):
+        # Try this new structure:
+        """
+        1. Scour the whole mod/ISO
+        2. If we hit a directory, add a key with a dict of the files in it as the value. If it's a file, make it a list.
+        3. Things outside of sys/files are inconsequential it seems, so we don't need to check for those (until we hit Wii)
+        """
+
+        # Make sure this isn't our ISO path/main mod dir, prevents base directory from being assimilated
+        if curr_dir_basename not in path_to_mod_root:
+            # 1. Get path as segments up until this folder, go into directory
+            # 2. Fill out all files into dict entry
+            # 3. Make empty entries of folders for later
+            # 4. Traceback our path to filter through our dictionary and place our files properly into their correct directories
+            # 5. Repeat
+
+            # This is our dict for all files in this current directory
+            curr_dir_dict = {}
+
+            # Get all segments of this path
+            # This keeps track of depth here, we can get lost in some deep territory...
+            def segment_paths(path_to_split):
+                nonlocal game_ID
+                segment_list = []
+                path_name = Path(path_to_split).resolve().name
+                for parent in Path(path_to_split).resolve().parents:
+                    path_name = Path(path_name).resolve().name
+                    if path_name == ORIGINAL_ISO_DIR.format(game_ID):
+                        break
+                    segment_list.append(path_name)
+                    path_name = parent
+                return segment_list
+
+            dict_key_trace = segment_paths(dirpath)
+
+            # Correct our path traceback (it usually comes in backwards)
+            dict_key_trace.reverse()
+
             for filename in filenames:
                 # IF ON WINDOWS, THIS FILE SHOULD NOT BE ADDED
                 # Thanks, windows configs...
@@ -156,32 +183,47 @@ def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None):
                 with open(fileLoc, 'rb', buffering=0) as f:
                     fileHash256 = hashlib.file_digest(f, 'sha256').hexdigest()
 
-                # Store to proper dict
-                if inFilesPath:
-                    files_dict.update({filename: [fileLoc, fileType, fileHash256]})
+                # Store to current directory's dictionary
+                curr_dir_dict.update({filename: [fileLoc, fileType, fileHash256]})
 
-                if inSysPath:
-                    sys_dict.update({filename: [fileLoc, fileType, fileHash256]})
+            # Add the subfolders of this current directory into our entry
+            for dirname in dirnames:
+                curr_dir_dict.update({dirname: {}})
+
+            def search_and_update():
+                nonlocal output_dict
+                nonlocal dirpath
+                nonlocal curr_dir_basename
+                nonlocal curr_dir_dict
+                nonlocal dict_key_trace
+
+                test_dict = output_dict
+                # We will recurse down the key list until we find where we need to be, directory wise
+
+                # Recurse until we hit our bottommost directory and make a clone (python does shallow copies by default)
+                while dict_key_trace:
+                    # Read the path traceback from earlier, keep moving down until it's empty (gone through the whole dict)
+                    try:
+                        # Normal behavior
+                        test_dict = test_dict[dict_key_trace[0]]
+                        dict_key_trace.pop(0)
+                    except Exception as KeyError:
+                        # If key error, add key (covers sys/files folder for now) (MIGHT BE DANGEROUS IN THE FUTURE)
+                        test_dict.update({curr_dir_basename: curr_dir_dict})
+                        return
+
+                test_dict.update(curr_dir_dict)
+                pass
+
+            # Check if subfolder exists first, then update our output dictionary
+            search_and_update()
             pass
 
-    # path_to_isoDB_root = Path("C:\\Users\\smasi\\Downloads\\RidersDolphin3Windows\\x64\\ReaperCoMods\\CurrentTE")
-
-    # TODO: Update later so it's not hardcoded to these two folders only
-    # GC ISOs follow this format, Wii ISOs have partitions and update folders so we need to add support for those
-    # Only add these if the dicts exist
-    if sys_dict: output_dict.update({"sys": sys_dict})
-    if files_dict: output_dict.update({"files": files_dict})
+    # GC ISOs follow this format, Wii ISOs have partitions and update folders
 
     # After all that parsing, we want to save our dicts as a JSON for later ref
     with open(os.path.join(path_to_db, DB_JSON), "w") as file:
         json.dump(output_dict, file, indent=4)  # indent for pretty-printing
-
-    # Read it back
-    # with open(os.path.join(path_to_db, "db.json"), "r") as file:
-        # loaded_dict = json.load(file)
-
-    # TODO: Add configparser file for mod information
-    # Add mod.ini generation here?
 
     pass
 
@@ -358,9 +400,35 @@ def move_mod_files_to_final_place(mod_iso_db, file_dict):
         os.makedirs(new_directory, exist_ok=True)
 
         for filename, filedata in filelist.items():
-            shutil.copy(filedata[0], new_directory)
+            # check for subfolders.
+            # if they exist, make them a directory and place things there
+            # if isinstance(filedata, list): this is a file, use [0] for the location for shutil.copy(filedata[0], new_directory)
+            # if isinstance(filedata, dict): this is a subfolder, add files/folders from where they come from
+            if isinstance(filedata, list):
+                shutil.copy(filedata[0], new_directory)
+            elif isinstance(filedata, dict):
+                recurse_subfolders_on_save(filedata, new_directory, filename)
             pass
         pass
+    pass
+
+def recurse_subfolders_on_save(filedata, new_directory, sub_folder):
+    # new_directory must be modified to fit subdirectories, so check the dict for it
+    new_directory = os.path.join(Path(new_directory), sub_folder)
+
+    if os.path.exists(new_directory):
+        shutil.rmtree(new_directory)
+
+    # Generate the directory again and place files
+    os.makedirs(new_directory, exist_ok=True)
+
+    for subname, subdata in filedata.items():
+        if isinstance(subdata, dict):
+            # Recurse and go down more subfolders
+            recurse_subfolders_on_save(subdata, new_directory, subname)
+        elif isinstance(subdata, list):
+            shutil.copy(subdata[0], new_directory)
+    pass
     pass
 
 def create_mod_dirs(new_mod_data, path_to_add):

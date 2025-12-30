@@ -251,7 +251,7 @@ def add_new_game_from_dolphin(path_to_new_game):
     # Generate DB files for vanilla ISO
     # iso_db_path = os.path.join(new_mod_dir, Path("DBs"), Path(gameID + dirs_to_make[3]))
     iso_db_path = os.path.join(new_mod_dir, Path(gameID + dirs_to_make[1]))
-    generate_file_DB_for_mod(extract_iso_path, iso_db_path)
+    generate_file_DB_for_mod(extract_iso_path, iso_db_path, game_ID=gameID)
 
     # Search for dol (preferably in root, sys folders)
     # path_to_dol = ""
