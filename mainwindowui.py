@@ -15,6 +15,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QRunnable, pyqtSlot, QThreadPool, Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QComboBox, QVBoxLayout, QWidget, QLineEdit, \
     QFileDialog, QHeaderView, QTableWidgetItem, QAbstractItemView
+from PyQt6.QtGui import QIcon
 
 from modfileutils import get_path_to_game_folder
 from addmodui import AddModWindow
@@ -54,6 +55,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         # Load mainwindow file
         uic.loadUi(os.path.join(UI_FOLDER_PATH, 'mainwindow.ui'), self)
+        ico_path = QIcon(os.path.join(os.getcwd(), "appAssets", "OLLIELG.ICO"))
+        self.setWindowIcon(ico_path)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         # This does technically start a thread, but you can never update the thread... which sucks
@@ -160,15 +163,15 @@ class MainWindow(QMainWindow):
             ver_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
             auth_item = QtWidgets.QTableWidgetItem(info["author"])
             auth_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
-            # desc_item = QtWidgets.QTableWidgetItem(info["description"])
-            # desc_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            desc_item = QtWidgets.QTableWidgetItem(info["description"])
+            desc_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
 
             title_item.setCheckState(is_mod_enabled(self.currentGameCombobox.currentText(), title_item.text()))
             self.modsTableWidget.blockSignals(True)
             self.modsTableWidget.setItem(row, 0, title_item)
             self.modsTableWidget.setItem(row, 1, ver_item)
             self.modsTableWidget.setItem(row, 2, auth_item)
-            # self.modsTableWidget.setItem(row, 3, desc_item)
+            self.modsTableWidget.setItem(row, 3, desc_item)
             self.modsTableWidget.blockSignals(False)
             row += 1
 
@@ -356,12 +359,15 @@ class MainWindow(QMainWindow):
             ver_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
             auth_item = QtWidgets.QTableWidgetItem(info["author"])
             auth_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            desc_item = QtWidgets.QTableWidgetItem(info["description"])
+            desc_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
 
             title_item.setCheckState(is_mod_enabled(self.currentGameCombobox.currentText(), title_item.text()))
             self.modsTableWidget.blockSignals(True)
             self.modsTableWidget.setItem(row, 0, title_item)
             self.modsTableWidget.setItem(row, 1, ver_item)
             self.modsTableWidget.setItem(row, 2, auth_item)
+            self.modsTableWidget.setItem(row, 3, desc_item)
             self.modsTableWidget.blockSignals(False)
             row += 1
 
@@ -407,13 +413,19 @@ class MainWindow(QMainWindow):
         sent_button = self.sender()
         if sent_button == self.modsDirToolbutton:
             path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Mod Directory", options=QFileDialog.Option.ShowDirsOnly)
+            if not path_to_directory:
+                return
             plaintext = set_up_directory(path_to_directory, 'modsdir')
             self.modsDirPathField.setPlainText(plaintext)
         elif sent_button == self.dolphinDirToolbutton:
             path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Dolphin Directory", options=QFileDialog.Option.ShowDirsOnly)
+            if not path_to_directory:
+                return
             self.dolphinDirPathField.setPlainText(set_up_directory(path_to_directory, 'dolphindir'))
         elif sent_button == self.pluginsDirToolbutton:
             path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Plugins Directory", options=QFileDialog.Option.ShowDirsOnly)
+            if not path_to_directory:
+                return
             self.pluginsDirPathField.setPlainText(set_up_directory(path_to_directory, 'pluginsdir'))
         pass
 

@@ -22,6 +22,8 @@ def set_modsDB(modsDB_data, path_to_gamemod_folder, gameID=None, mods_to_remove=
 
     # get all top-level directories in gameID_mods folder
     path_to_mods_folder = os.path.join(path_to_gamemod_folder, Path(MOD_PACK_DIR.format(gameID)))
+
+    # This used to only check the existing ones in the directory itself
     list_of_mods = os.listdir(path_to_mods_folder)
 
     # Clear all mods from this section so we can repopulate this entirely (better than combing every key-val for matches)
@@ -47,10 +49,15 @@ def set_modsDB(modsDB_data, path_to_gamemod_folder, gameID=None, mods_to_remove=
                                         # option_to_check="",
                                         # return_keys=True,
                                         return_values=True)
+
+        # In the future, we'll handle the deletions here as well. Problem: we'd need the GUIDs, so that's for later.
+        # if not mods_to_remove:
+        #     mods_to_remove = [v for v in stored_mods if os.path.basename(v) not in list_of_mods]
     except:
         # If there is no section, allow it through and let it generate
         has_no_mods = True
 
+    # in list_of_mods
     for mod_pack in list_of_mods:
         path_of_mod = os.path.join(path_to_mods_folder, Path(mod_pack))
         if path_of_mod in stored_mods and not has_no_mods:

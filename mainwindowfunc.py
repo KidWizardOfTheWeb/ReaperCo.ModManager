@@ -155,7 +155,9 @@ def populate_modlist(game_title):
                 print("Modinfo not found for mod! Creating...")
             pass
 
-    # list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir)
+    # List of mods WILL CHANGE if there are any deleted. So call this again at the end.
+    # I used to think this was useless until I remembered we literally modified the DB during all of this.
+    list_of_mods = get_modsDB(modsDB_data=path_to_mods_db, path_to_gamemod_folder=game_mod_dir)
     print("Loading " + str(len(list_of_mods)) + " mods...")
 
     return list_of_mods, list_of_modinfo
