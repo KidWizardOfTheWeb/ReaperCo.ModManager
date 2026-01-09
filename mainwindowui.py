@@ -59,6 +59,9 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(ico_path)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
+        # Fixes the cells in the table
+        self.setStyleSheet("QTableWidget::item{selection-color: #ffffff; selection-background-color: #0010cf;}")
+
         # This does technically start a thread, but you can never update the thread... which sucks
         client_id = "1432755181598150908"
         # Init thread in window to access later?
@@ -136,6 +139,7 @@ class MainWindow(QMainWindow):
         self.modsTableWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.modsTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.modsTableWidget.setDragDropOverwriteMode(False)
+        self.modsTableWidget.itemChanged.connect(self.update_modinfo_from_cell)
 
         # MAKE SURE EVERYTHING IS HOOKED BEFORE CANCELLING FILLING THESE OUT
         if self.currentGameCombobox.count() <= 1:
@@ -158,13 +162,16 @@ class MainWindow(QMainWindow):
         for info in mod_info:
             # Make item
             title_item = QtWidgets.QTableWidgetItem(info["title"])
-            title_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            title_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled & ~Qt.ItemFlag.ItemIsEditable)
+
             ver_item = QtWidgets.QTableWidgetItem(info["version"])
-            ver_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            ver_item.setFlags(ver_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+
             auth_item = QtWidgets.QTableWidgetItem(info["author"])
-            auth_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            auth_item.setFlags(auth_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+
             desc_item = QtWidgets.QTableWidgetItem(info["description"])
-            desc_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
 
             title_item.setCheckState(is_mod_enabled(self.currentGameCombobox.currentText(), title_item.text()))
             self.modsTableWidget.blockSignals(True)
@@ -185,6 +192,27 @@ class MainWindow(QMainWindow):
     #     # super().focusInEvent(event)  # Call the base class implementation
     #     self.refresh_modsUI()
     #     pass
+
+    def update_modinfo_from_cell(self, item):
+        # Retrieve the related file by matching mod and game, then update whatever is needed
+        # item is the newly changed cell.
+
+        # Get the mod title from the left cell
+        curr_row = item.row()
+        curr_col = item.column()
+        mod_title = self.modsTableWidget.item(curr_row, 0).text()
+        column_titles = ["Title", "Version", "Author", "Description"]
+        value_changed = column_titles[curr_col]
+
+        game_mod_dir = get_path_to_game_folder(self.currentGameCombobox.currentText())
+        gameID = os.path.basename(game_mod_dir)
+        path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID)))
+
+        mod_to_test = os.path.join(path_to_mods_folder, mod_title)
+
+        # Get the mod details of this mod and update it
+        set_config_option(MODINFO_INI, mod_to_test, "Desc", value_changed, new_value=item.text())
+        pass
 
     def compile_mods(self):
         compile_options_window = CompileModOptionsWindow()
@@ -349,18 +377,22 @@ class MainWindow(QMainWindow):
         self.modsTableWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.modsTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.modsTableWidget.setDragDropOverwriteMode(False)
+        # self.modsTableWidget.itemChanged.connect(self.update_modinfo_from_cell)
 
         row = 0
         for info in mod_info:
             # Make item
             title_item = QtWidgets.QTableWidgetItem(info["title"])
-            title_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            title_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled & ~Qt.ItemFlag.ItemIsEditable)
+
             ver_item = QtWidgets.QTableWidgetItem(info["version"])
-            ver_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            ver_item.setFlags(ver_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+
             auth_item = QtWidgets.QTableWidgetItem(info["author"])
-            auth_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            auth_item.setFlags(auth_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+
             desc_item = QtWidgets.QTableWidgetItem(info["description"])
-            desc_item.setFlags(title_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
+            desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsDropEnabled)
 
             title_item.setCheckState(is_mod_enabled(self.currentGameCombobox.currentText(), title_item.text()))
             self.modsTableWidget.blockSignals(True)

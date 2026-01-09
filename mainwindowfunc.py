@@ -655,10 +655,22 @@ def create_mod_processing(game_title):
     path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID), Path(new_mod_data["Mod Title"])))
 
     # Create our directories as requested
-    create_mod_dirs(new_mod_data, path_to_mods_folder)
+    try:
+        create_mod_dirs(new_mod_data, path_to_mods_folder)
+    except FileExistsError as e:
+        # If the mod exists, cease immediately
+        dialog = WarningWindow(warning_text=new_mod_data["Mod Title"] + " already exists!\n"
+                                                                        "Delete/rename the existing mod,"
+                                                                        " or select a different name for"
+                                                                        " the mod you want to create.")
+        dialog.exec()
+        return
+    except FileNotFoundError as e:
+        dialog = WarningWindow(warning_text="Given file path is incorrect!")
+        dialog.exec()
+        return
 
     # Generate an info file for the mod. This will be used for the UI in the QTableView when added
-    # TODO: Should add a way to access and modify these details later...
     generate_modInfo_ini_file(new_mod_data, path_to_mods_folder)
     pass
 

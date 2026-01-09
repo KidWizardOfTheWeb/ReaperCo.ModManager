@@ -454,11 +454,11 @@ def create_mod_dirs(new_mod_data, path_to_add):
                 opener = "open" if sys.platform == "darwin" else "xdg-open"
                 subprocess.call([opener, path_to_add])
             
-
+    # except IsADirectoryError:
     except FileExistsError:
-        print("Mod already exists!")
-        pass
+        print("Mod already exists!\n")
+        raise FileExistsError
     except FileNotFoundError:
-        print("Path is incorrect!")
-        pass
+        print("Path is incorrect!\n")
+        raise FileNotFoundError
     pass
