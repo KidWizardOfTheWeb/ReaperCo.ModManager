@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Fixed a bug regarding refreshing mods, added descriptions back, added icon, fixed settings paths">
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Can update mod fields in GUI, fixed an oversight with new mod creation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainwindowfunc.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowfunc.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainwindowui.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modfileutils.py" beforeDir="false" afterPath="$PROJECT_DIR$/modfileutils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -359,7 +357,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767992017625</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="Can update mod fields in GUI, fixed an oversight with new mod creation">
+      <option name="closed" value="true" />
+      <created>1767998907479</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1767998907479</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -401,7 +407,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fully functional" />
     <MESSAGE value="Added requirements.txt" />
     <MESSAGE value="Fixed making dupe games when adding another, redumps selected game instead" />
     <MESSAGE value="Added ReadMe, start game button functionality, adjusted reordering" />
@@ -426,7 +431,8 @@
     <MESSAGE value="Added compilation options, zipping active mods to archive" />
     <MESSAGE value="Added support for GC games with subfolders" />
     <MESSAGE value="Fixed a bug regarding refreshing mods, added descriptions back, added icon, fixed settings paths" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed a bug regarding refreshing mods, added descriptions back, added icon, fixed settings paths" />
+    <MESSAGE value="Can update mod fields in GUI, fixed an oversight with new mod creation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Can update mod fields in GUI, fixed an oversight with new mod creation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -450,11 +456,6 @@
           <url>file://$PROJECT_DIR$/richpresence.py</url>
           <line>16</line>
           <option name="timeStamp" value="105" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>338</line>
-          <option name="timeStamp" value="214" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
@@ -503,7 +504,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>472</line>
+          <line>509</line>
           <option name="timeStamp" value="407" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -515,6 +516,16 @@
           <url>file://$PROJECT_DIR$/modfileutils.py</url>
           <line>459</line>
           <option name="timeStamp" value="431" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/mainwindowui.py</url>
+          <line>214</line>
+          <option name="timeStamp" value="437" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/mainwindowui.py</url>
+          <line>210</line>
+          <option name="timeStamp" value="438" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

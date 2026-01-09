@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         # Fixes the cells in the table
-        self.setStyleSheet("QTableWidget::item{selection-color: #ffffff; selection-background-color: #0010cf;}")
+        # self.setStyleSheet("QTableWidget::item{selection-color: #ffffff; selection-background-color: #0010cf;}")
 
         # This does technically start a thread, but you can never update the thread... which sucks
         client_id = "1432755181598150908"
@@ -78,6 +78,9 @@ class MainWindow(QMainWindow):
         self.threadpool = QThreadPool()
 
         self.aboutButton.clicked.connect(self.about_window)
+
+        # TAB WIDGET - handles style changes
+        self.tabWidget.currentChanged.connect(self.change_tabstyle)
 
         # SETTINGS BUTTONS - make sure to change these on load depending on the settings toggles
         self.launchDolphinPlayRadiobutton.setChecked(check_play_behavior(self.launchDolphinPlayRadiobutton.text()))
@@ -140,6 +143,7 @@ class MainWindow(QMainWindow):
         self.modsTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.modsTableWidget.setDragDropOverwriteMode(False)
         self.modsTableWidget.itemChanged.connect(self.update_modinfo_from_cell)
+        self.modsTableWidget.doubleClicked.connect(self.open_mod_folder)
 
         # MAKE SURE EVERYTHING IS HOOKED BEFORE CANCELLING FILLING THESE OUT
         if self.currentGameCombobox.count() <= 1:
@@ -149,7 +153,11 @@ class MainWindow(QMainWindow):
             print("No mods or games! Add a game with the combobox.")
             self.tabWidget.setTabEnabled(0, False)
             self.tabWidget.setCurrentIndex(1)
+            self.setStyleSheet("")
             return
+        elif self.tabWidget.isEnabled:
+            self.setStyleSheet("QTableWidget::item{selection-color: #ffffff; selection-background-color: #0010cf;}")
+            pass
 
         if not mod_info:
             # There's no mods here, don't fill out mod list
@@ -193,6 +201,35 @@ class MainWindow(QMainWindow):
     #     self.refresh_modsUI()
     #     pass
 
+    def change_tabstyle(self, tab_idx):
+        if tab_idx == 0:
+            # Mods tab needs this so entering data doesn't look doubled
+            self.setStyleSheet("QTableWidget::item{selection-color: #ffffff; selection-background-color: #0010cf;}")
+        else:
+            # Remove stylesheet/set to default if not this tab
+            self.setStyleSheet("")
+        pass
+
+    def open_mod_folder(self, item):
+        # Open the mod when the name in the GUI is clicked on
+        if item.column() != 0:
+            return
+
+        mod_title = item.data()
+
+        game_mod_dir = get_path_to_game_folder(self.currentGameCombobox.currentText())
+        gameID = os.path.basename(game_mod_dir)
+        path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID)))
+
+        mod_to_open = os.path.join(path_to_mods_folder, mod_title)
+
+        if sys.platform == "win32":
+            os.startfile(mod_to_open)
+        else:
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, mod_to_open])
+        pass
+
     def update_modinfo_from_cell(self, item):
         # Retrieve the related file by matching mod and game, then update whatever is needed
         # item is the newly changed cell.
@@ -208,10 +245,10 @@ class MainWindow(QMainWindow):
         gameID = os.path.basename(game_mod_dir)
         path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID)))
 
-        mod_to_test = os.path.join(path_to_mods_folder, mod_title)
+        mod_to_update = os.path.join(path_to_mods_folder, mod_title)
 
         # Get the mod details of this mod and update it
-        set_config_option(MODINFO_INI, mod_to_test, "Desc", value_changed, new_value=item.text())
+        set_config_option(MODINFO_INI, mod_to_update, "Desc", value_changed, new_value=item.text())
         pass
 
     def compile_mods(self):
