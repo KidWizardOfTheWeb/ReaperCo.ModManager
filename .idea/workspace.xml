@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Can update mod fields in GUI, fixed an oversight with new mod creation">
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Can open a mod in file explorer by clicking the name in the GUI, fixed double text on entering data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainwindowfunc.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowfunc.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainwindowui.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/compilemodoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/windowUIFiles/compilemodoptions.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -365,7 +367,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767998907479</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Can open a mod in file explorer by clicking the name in the GUI, fixed double text on entering data">
+      <option name="closed" value="true" />
+      <created>1768000049335</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1768000049335</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -407,7 +417,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added requirements.txt" />
     <MESSAGE value="Fixed making dupe games when adding another, redumps selected game instead" />
     <MESSAGE value="Added ReadMe, start game button functionality, adjusted reordering" />
     <MESSAGE value="Fixed a bug regarding having zero games, would have invalid checkboxes" />
@@ -432,7 +441,8 @@
     <MESSAGE value="Added support for GC games with subfolders" />
     <MESSAGE value="Fixed a bug regarding refreshing mods, added descriptions back, added icon, fixed settings paths" />
     <MESSAGE value="Can update mod fields in GUI, fixed an oversight with new mod creation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Can update mod fields in GUI, fixed an oversight with new mod creation" />
+    <MESSAGE value="Can open a mod in file explorer by clicking the name in the GUI, fixed double text on entering data" />
+    <option name="LAST_COMMIT_MESSAGE" value="Can open a mod in file explorer by clicking the name in the GUI, fixed double text on entering data" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -449,7 +459,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>746</line>
+          <line>782</line>
           <option name="timeStamp" value="100" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -459,7 +469,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>480</line>
+          <line>516</line>
           <option name="timeStamp" value="231" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -494,17 +504,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>763</line>
+          <line>799</line>
           <option name="timeStamp" value="303" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>775</line>
+          <line>811</line>
           <option name="timeStamp" value="304" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>509</line>
+          <line>515</line>
           <option name="timeStamp" value="407" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -518,14 +528,19 @@
           <option name="timeStamp" value="431" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>214</line>
-          <option name="timeStamp" value="437" />
+          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
+          <line>286</line>
+          <option name="timeStamp" value="439" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>210</line>
-          <option name="timeStamp" value="438" />
+          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
+          <line>317</line>
+          <option name="timeStamp" value="441" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
+          <line>863</line>
+          <option name="timeStamp" value="443" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

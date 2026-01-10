@@ -58,7 +58,7 @@
       <item row="2" column="0">
        <widget class="QRadioButton" name="createISORadioButton">
         <property name="text">
-         <string>Create ISO file (not implemented yet)</string>
+         <string>Create ISO file with all active mods</string>
         </property>
        </widget>
       </item>

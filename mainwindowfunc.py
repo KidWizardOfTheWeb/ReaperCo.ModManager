@@ -281,6 +281,45 @@ def add_new_game_from_dolphin(path_to_new_game):
 
     return gameID, gameTitle
 
+def create_iso_game_from_dolphin(path_to_new_game, game_title):
+    # Check if a path to dolphin and the mods dir is set first
+
+    path_to_dolphin, path_to_mods = check_paths()
+
+    if not path_to_dolphin or not path_to_mods:
+    #     # Error window here, print what's missing, end function
+    #     print("Error here! Path to dolphin or path to mods missing.")
+        return
+
+    if not path_to_new_game:
+        return None
+
+    # In the future, let users pick the format rather than iso
+    path_to_new_game = Path(str(path_to_new_game) + str(".iso"))
+
+    # get dolphin tool location
+    path_to_dolphintool = os.path.join(Path(path_to_dolphin), Path(DOLPHIN_TOOL))
+
+    game_mod_dir = get_path_to_game_folder(game_title)
+    gameID = os.path.basename(game_mod_dir)
+    path_to_game_dol = os.path.join(Path(game_mod_dir), Path(MOD_ISO_DIR.format(gameID)), Path("sys"), Path("main.dol"))
+
+    try:
+        if sys.platform == "linux":
+            ans = subprocess.check_output(["flatpak", "run", DOLPHIN_TOOL, DOLPHIN_EXE, "convert", "-i", path_to_game_dol, "-o", path_to_new_game, "-f", "iso"], text=True)
+        else:
+            ans = subprocess.check_output([path_to_dolphintool, "convert", "-i", path_to_game_dol, "-o", path_to_new_game, "-f", "iso"], text=True)
+        print(ans)
+        dialog = WarningWindow(title="Success!",
+                               warning_text="Mod ISO is located at: " + str(path_to_new_game))
+        dialog.exec()
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed with return code {e.returncode}")
+        return
+
+
+    return
+
 def set_up_directory(path_to_directory, directory_option):
     # tkinter.Tk().withdraw()  # prevents an empty tkinter window from appearing
     # Return file selected
@@ -824,6 +863,9 @@ def zip_mods_processing(active_mods, game_title, path_to_zip):
 
         # Clean up the temporary directory
         shutil.rmtree(temp_dir)
+
+        dialog = WarningWindow(title="Success!", warning_text="Zipped mods are located at: " + str(path_to_zip) + ".zip")
+        dialog.exec()
     except Exception as e:
         print(e)
     pass

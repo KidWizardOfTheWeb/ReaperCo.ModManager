@@ -267,6 +267,12 @@ class MainWindow(QMainWindow):
                 # # Ensure we have a path here, otherwise do nothing.
                 # if path_to_directory[0]:
                 #     install_mod_by_folder(self.currentGameCombobox.currentText(), path_to_directory[0])
+                # Save the mods first, then run dolphintool to compile the output.
+                path_to_directory = QFileDialog.getSaveFileName(self, caption="Save Modded ISO")
+                if path_to_directory[0]:
+                    self.save_mods()
+                    create_iso_game_from_dolphin(path_to_directory[0], self.currentGameCombobox.currentText())
+                # compile_ISO_with_dolphin()
                 pass
 
             if compile_options_window.createRVLPatchRadioButton.isChecked():
