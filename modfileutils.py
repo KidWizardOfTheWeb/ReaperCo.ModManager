@@ -374,8 +374,22 @@ def merge_mod_dbs(active_mods, game_title):
                 if curr_dir_basename == os.path.basename(path_to_mod_root):
                     continue
                 # if the above doesn't work, we ended moving down directories, so set up the next based on where we enter from with os.walk
+
+                # Set us back to the top, so we can now go back down and check our paths
                 dict_search_ptr = main_iso_dict
-                dict_search_ptr = dict_search_ptr[curr_dir_basename]
+                try:
+                    # This assumes we go back to the top directory. This is faster for single dir games.
+                    dict_search_ptr = dict_search_ptr[curr_dir_basename]
+                except:
+                    # If we're not at the top dir, then we have to do the whole searching shenanigans
+                    # Here, we want to get the diff between the current mod dirpath and the root of the mod
+                    # Keypaths contain the valid paths to where we are now, so we want to loop these until we get down there
+                    key_paths = list(Path(dirpath.replace(path_to_mod_root,'')).parts)
+                    key_paths.pop(0) # Remove the first slashes here (CHECK LINUX LATER)
+
+                    # Use dirpath and Pathlib to find everything from sys/files up until our curr_dir_basename
+                    while len(key_paths) > 0:
+                        dict_search_ptr = dict_search_ptr[key_paths.pop(0)]
                 pass
 
             def handle_file_db_writes():
