@@ -87,7 +87,9 @@ class MainWindow(QMainWindow):
         self.launchDolphinPlayRadiobutton.toggled.connect(self.toggle_play_behavior)
         self.playGameRadiobutton.setChecked(check_play_behavior(self.playGameRadiobutton.text()))
         self.playGameRadiobutton.toggled.connect(self.toggle_play_behavior)
-        self.checkBox_5.setChecked(settings_checkbox_init())
+        self.checkBox_4.setChecked(settings_checkbox_init("check4"))
+        self.checkBox_4.checkStateChanged.connect(self.toggle_checkbox_settings)
+        self.checkBox_5.setChecked(settings_checkbox_init("check5"))
         self.checkBox_5.checkStateChanged.connect(self.toggle_checkbox_settings)
 
         # DIR PLAIN TEXT SETUP
@@ -523,10 +525,11 @@ class MainWindow(QMainWindow):
             # Checks if game is already in list to prevent duplicates
             AllItems = [self.currentGameCombobox.itemText(i) for i in range(self.currentGameCombobox.count())]
 
+            gameTitle = gameTitle.replace(" ", "")
             if gameTitle.lower() not in AllItems:
                 # Add this game title to settings.ini, set box to new title
                 # gameTitle MUST BE ONE CONTINUOUS STRING TO WORK IN INI
-                gameTitle = gameTitle.replace(" ", "")
+                # gameTitle = gameTitle.replace(" ", "")
                 self.currentGameCombobox.insertItem(0, gameTitle.lower())
                 set_config_option(SETTINGS_INI,
                                   path_to_config=os.path.join(os.getcwd(), "config"),

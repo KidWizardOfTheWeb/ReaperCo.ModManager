@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Can open a mod in file explorer by clicking the name in the GUI, fixed double text on entering data">
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Added icon to repo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filemanagerutils.py" beforeDir="false" afterPath="$PROJECT_DIR$/filemanagerutils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainwindowfunc.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowfunc.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainwindowui.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windowUIFiles/compilemodoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/windowUIFiles/compilemodoptions.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modfileutils.py" beforeDir="false" afterPath="$PROJECT_DIR$/modfileutils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/mainwindow.ui" beforeDir="false" afterPath="$PROJECT_DIR$/windowUIFiles/mainwindow.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -375,7 +377,23 @@
       <option name="project" value="LOCAL" />
       <updated>1768000049335</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Can now generate ISOs from mods, added popups for when compiling is finished">
+      <option name="closed" value="true" />
+      <created>1768030605503</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1768030605503</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Added icon to repo">
+      <option name="closed" value="true" />
+      <created>1768094626886</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1768094626886</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -417,8 +435,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed making dupe games when adding another, redumps selected game instead" />
-    <MESSAGE value="Added ReadMe, start game button functionality, adjusted reordering" />
     <MESSAGE value="Fixed a bug regarding having zero games, would have invalid checkboxes" />
     <MESSAGE value="Added groupbox indicator for some actions" />
     <MESSAGE value="Fixed a bug where nonexistent mod folders may not exist and permeate in DBs" />
@@ -442,25 +458,17 @@
     <MESSAGE value="Fixed a bug regarding refreshing mods, added descriptions back, added icon, fixed settings paths" />
     <MESSAGE value="Can update mod fields in GUI, fixed an oversight with new mod creation" />
     <MESSAGE value="Can open a mod in file explorer by clicking the name in the GUI, fixed double text on entering data" />
-    <option name="LAST_COMMIT_MESSAGE" value="Can open a mod in file explorer by clicking the name in the GUI, fixed double text on entering data" />
+    <MESSAGE value="Can now generate ISOs from mods, added popups for when compiling is finished" />
+    <MESSAGE value="Added icon to repo" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added icon to repo" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/modfileutils.py</url>
-          <line>249</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/richpresence.py</url>
           <line>18</line>
           <option name="timeStamp" value="93" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>782</line>
-          <option name="timeStamp" value="100" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/richpresence.py</url>
@@ -469,7 +477,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>516</line>
+          <line>521</line>
           <option name="timeStamp" value="231" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -504,43 +512,83 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>799</line>
+          <line>821</line>
           <option name="timeStamp" value="303" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>811</line>
+          <line>833</line>
           <option name="timeStamp" value="304" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowui.py</url>
-          <line>515</line>
+          <line>517</line>
           <option name="timeStamp" value="407" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/modfileutils.py</url>
-          <line>441</line>
-          <option name="timeStamp" value="427" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/modfileutils.py</url>
-          <line>459</line>
+          <line>538</line>
           <option name="timeStamp" value="431" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>286</line>
+          <line>288</line>
           <option name="timeStamp" value="439" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>317</line>
+          <line>322</line>
           <option name="timeStamp" value="441" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>863</line>
+          <line>885</line>
           <option name="timeStamp" value="443" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modfileutils.py</url>
+          <line>195</line>
+          <option name="timeStamp" value="456" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modfileutils.py</url>
+          <line>233</line>
+          <option name="timeStamp" value="458" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modfileutils.py</url>
+          <line>249</line>
+          <option name="timeStamp" value="461" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modfileutils.py</url>
+          <line>254</line>
+          <option name="timeStamp" value="462" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modfileutils.py</url>
+          <line>255</line>
+          <option name="timeStamp" value="463" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modfileutils.py</url>
+          <line>153</line>
+          <option name="timeStamp" value="494" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modfileutils.py</url>
+          <line>154</line>
+          <option name="timeStamp" value="495" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modfileutils.py</url>
+          <line>428</line>
+          <option name="timeStamp" value="559" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modfileutils.py</url>
+          <line>355</line>
+          <option name="timeStamp" value="561" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

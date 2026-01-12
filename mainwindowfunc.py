@@ -12,7 +12,7 @@ from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, DB_I
     MODINFO_INI
 from filemanagerutils import get_config_option, set_config_option, generate_modsDB_ini, generate_modInfo_ini_file
 from modfileutils import generate_file_DB_for_mod, set_modsDB, get_modsDB, merge_mod_dbs, move_mod_files_to_final_place, \
-    create_mod_dirs, get_path_to_game_folder
+    create_mod_dirs, get_path_to_game_folder, generate_db_processing
 import subprocess
 from pathlib import Path, PurePath, WindowsPath
 
@@ -253,28 +253,14 @@ def add_new_game_from_dolphin(path_to_new_game):
     # Generate DB files for vanilla ISO
     # iso_db_path = os.path.join(new_mod_dir, Path("DBs"), Path(gameID + dirs_to_make[3]))
     iso_db_path = os.path.join(new_mod_dir, Path(gameID + dirs_to_make[1]))
-    generate_file_DB_for_mod(extract_iso_path, iso_db_path, game_ID=gameID)
+    generate_db_processing(iso_db_path)
 
-    # Search for dol (preferably in root, sys folders)
-    # path_to_dol = ""
-    # testDOL = ""
-    # for dirpath, dir_names, filenames in os.walk(path_to_new_game, topdown=True):
-    #     # Find dol in directories.
-    #     # If found, record and use for later and break loop immediately
-    #     testDOL = next((s for s in filenames if ".dol" in s), None)
-    #     if testDOL:
-    #         path_to_dol = os.path.join(Path(dirpath), Path(testDOL))
-    #         break
-    #     pass
     """
     /gameID
     __/gameID_Mods (mods for the game itself are stored here)
-    __/gameID_ISO_DB (original files are parsed and stored here for base case)
-    __/gameID_MOD_DB (final stored mod database)
     __/gameID_ISO (original files of game, extracted)
     __/gameID_MOD (final modded version of game)
     """
-
 
     # GENERATE modsDB.ini in root of game folder
     generate_modsDB_ini(os.path.join(new_mod_dir, Path(MODSDB_INI)))
@@ -787,12 +773,29 @@ def save_checkbox_settings(checkbox_text, is_checked):
                           option_to_write="createDBForFinalOutput",
                           new_value=str(state_to_write))
 
+    if checkbox_text == 'Disable file warnings when saving mods that inject original files (WARNING: ALL FILES BECOME VALID WITH THIS ENABLED)':
+        set_config_option(SETTINGS_INI,
+                          path_to_config=os.path.join(os.getcwd(), "config"),
+                          section_to_write="AppSettings",
+                          option_to_write="ignoreOriginalFileWarnings",
+                          new_value=str(state_to_write))
 
-def settings_checkbox_init():
-    is_checked = int(get_config_option(SETTINGS_INI,
-                                          "config",
-                                          "AppSettings",
-                                          "createDBForFinalOutput"))
+
+def settings_checkbox_init(caller):
+    is_checked = False
+    # Caller = which checkbox did it.
+    if caller == "check4":
+        is_checked = int(get_config_option(SETTINGS_INI,
+                                           "config",
+                                           "AppSettings",
+                                           "ignoreOriginalFileWarnings"))
+    elif caller == "check5":
+        is_checked = int(get_config_option(SETTINGS_INI,
+                                              "config",
+                                              "AppSettings",
+                                              "createDBForFinalOutput"))
+
+
 
     if is_checked:
         return True

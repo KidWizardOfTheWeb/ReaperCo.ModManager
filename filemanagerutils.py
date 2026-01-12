@@ -33,6 +33,7 @@ def generate_settings_ini(settings_ini):
         "autoUpdateCheckerLauncher": "1",
         "autoUpdateCheckerMods": "1",
         "createDBForFinalOutput": "0",
+        "ignoreOriginalFileWarnings": "0",
         "keepLauncherOpenAfterGameStart": "1",
         "Language": "English",
         "Theme": "Basic"

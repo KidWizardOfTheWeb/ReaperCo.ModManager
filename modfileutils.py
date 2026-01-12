@@ -7,10 +7,12 @@ from pathlib import Path
 import shutil
 import hashlib
 import uuid
+# import datetime
 import tkinter
 # from tkinter import filedialog
 from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, ORIGINAL_ISO_DIR, MOD_ISO_DIR, DB_JSON
 from filemanagerutils import get_config_option, set_config_option
+from warningui import WarningWindow
 
 
 # Takes in the modsDB file, adds to the file as needed
@@ -123,10 +125,40 @@ def get_modsDB(modsDB_data, path_to_gamemod_folder, return_full_path=False, retu
 
     return list_of_mods
 
+def generate_db_processing(path_to_read):
+    file_dict = generate_file_DB_for_mod_pack(path_to_read)
+    with open(os.path.join(path_to_read, DB_JSON), "w") as file:
+        json.dump(file_dict, file, indent=4)  # indent for pretty-printing
+
+# Recursive implementation of generate_file_DB_for_mod(). Can save time, but will probably suffer on longer mods.
+def generate_file_DB_for_mod_pack(curr_path):
+    if os.path.isdir(curr_path):
+        # if the given path is a directory, add it to the dict as a key, then update the values
+        output_dict = {}
+        for item in os.listdir(curr_path):
+            # check for subfolders.
+            # if they exist, make them a directory and place things there
+            if item == 'db.json' or item == 'modinfo.ini':
+                continue
+            full_path = os.path.join(curr_path, item)
+            if os.path.isdir(full_path):
+                # Add the directory as a key with value none, then recurse and go deeper
+                output_dict[item] = generate_file_DB_for_mod_pack(full_path)
+                pass
+            else:
+                with open(full_path, 'rb', buffering=0) as f:
+                    fileHash256 = hashlib.file_digest(f, 'sha256').hexdigest()
+                output_dict.update({item: [full_path, os.path.splitext(item)[1], fileHash256]})
+                pass
+        return output_dict
+    print("DB generation finished.")
+    pass
 
 # Takes a file path and generates dictionary data for all files in from the given root downwards
 # IF THE path_to_db == NONE, STORE THE DB FILES AT THE ROOT POSITION (add wrapper func with @)
-def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None, game_ID=None):
+# This function will be heading to the glue factory soon. Was my best attempt without recursion originally, but recursion is too good.
+# Now unused and ready for deletion soon.
+def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None, game_ID=None, mod_title=None):
 
     # Create main dict to store all folders
     output_dict = {}
@@ -162,7 +194,8 @@ def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None, game_ID=None):
                 path_name = Path(path_to_split).resolve().name
                 for parent in Path(path_to_split).resolve().parents:
                     path_name = Path(path_name).resolve().name
-                    if path_name == ORIGINAL_ISO_DIR.format(game_ID):
+                    #  or path_name == mod_title
+                    if path_name == ORIGINAL_ISO_DIR.format(game_ID) or path_name == MOD_PACK_DIR.format(game_ID):
                         break
                     segment_list.append(path_name)
                     path_name = parent
@@ -208,6 +241,8 @@ def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None, game_ID=None):
                 # We will recurse down the key list until we find where we need to be, directory wise
 
                 # Recurse until we hit our bottommost directory and make a clone (python does shallow copies by default)
+                if len(dict_key_trace) > 2:
+                    dict_key_trace.pop(0)
                 while dict_key_trace:
                     # Read the path traceback from earlier, keep moving down until it's empty (gone through the whole dict)
                     try:
@@ -216,8 +251,12 @@ def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None, game_ID=None):
                         dict_key_trace.pop(0)
                     except Exception as KeyError:
                         # If key error, add key (covers sys/files folder for now) (MIGHT BE DANGEROUS IN THE FUTURE)
-                        test_dict.update({curr_dir_basename: curr_dir_dict})
-                        return
+                        if dict_key_trace[-1] != 'sys' and dict_key_trace[-1] != 'files':
+                            test_dict = test_dict[dict_key_trace[-1]]
+                            dict_key_trace.pop(-1)
+                        else:
+                            test_dict.update({curr_dir_basename: curr_dir_dict})
+                            return
 
                 test_dict.update(curr_dir_dict)
                 pass
@@ -234,73 +273,6 @@ def generate_file_DB_for_mod(path_to_mod_root, path_to_db=None, game_ID=None):
 
     pass
 
-
-# Load all files from the file folder of the game and parse properly into a hashmap (dict)
-# UNUSED RIGHT NOW
-def verify_files_from_vanilla_copy(path_to_iso_root=None, path_to_isoDB_root=None):
-
-    # If either of these parameters are none (especially the first since the second can be generated),
-    # Get the user to input the paths
-    if not path_to_iso_root or not path_to_isoDB_root:
-        # Error window here, print what's missing, end function
-        print("No path detected!!")
-        # path_to_iso_root = Path(input("Please enter the path to the extracted ISO (if it's not a path, prepare for a crash)."))
-        return
-
-        # Set path to isoDB to the main mods folder if the user has to enter a path here
-
-    # Error checks for sys AND files not existing (HIGHLY NECESSARY)
-    # TODO: Update later so it's not just hardcoded to these two
-    if sorted(os.listdir(path_to_iso_root)) != ['files', 'sys']:
-        print("Not all folders detected from original game copy!")
-    else:
-        generate_file_DB_for_mod(path_to_iso_root, path_to_isoDB_root)
-
-
-
-    # NOTE: copytree only copies to a NONEXISTING FOLDER. If the folder exists already, that's an error.
-
-    # Copies ENTIRE DIRECTORY to final location (for now)
-    # shutil.copytree(path_to_iso_root, path_to_isoDB_root)
-
-    """
-    After you get a dictionary of files, any other dictionary merged in (if it has the same keys as the original)
-    will replace the original dictionary's key-pair entries.
-    
-    i.e.:
-    If OGDict has 00.adx and newMod has 00.adx:
-        OGDict['00.adx'] is replaced by newMod['00.adx'] in final produced dictionary
-        
-    This is important because we can essentially take the original dict + all added mods and pull the files we need
-    from the final dict to the files folder as needed.
-    
-    How to calculate final dictionary of needed files:
-    Vanilla Game Sys/Files Dicts + any mod dicts = final dict
-    
-    This works because of the collision handling that python does, where the values for keys being merged into the original
-    dict overwrites it.
-    
-    Once final dict is calculated, move all the files in the dict to the files folder as needed.
-    
-    To get back to vanilla, user only has to save their mods with none turned on, essentially performing this:
-    Vanilla Game Sys/Files Dicts + no mods = final dict
-    
-    functions to create to handle all of this:
-    
-    store original vanilla files (in a state where files are NOT easily modified)
-    
-    generate hashes for new mod
-    
-    add vanilla file dicts + mod dicts to get final dict
-    
-    move files to final location from final dict
-    
-    prevent file mods moving if game is running
-    
-    How do we return the files though?
-    If we calculate a new mod database and the files have been moved, what do we do?
-    
-    """
 
 # Gets the directory to the game based on game title
 def get_path_to_game_folder(game_title):
@@ -349,38 +321,146 @@ def merge_mod_dbs(active_mods, game_title):
         # Genuinely no idea how I didn't do this first, probably because I returned names instead of IDs in the main call.
         mod_found = stored_mods[mod_key]
         active_mod_found.append(mod_found)
-        generate_file_DB_for_mod(mod_found, mod_found)
+        generate_db_processing(mod_found)
+
+        # Benchmarks here, uncomment to check
+        # start_time = datetime.datetime.now()
+        # print("Time started for DB saving: " + str(start_time))
+        # generate_file_DB_for_mod(mod_found, mod_found, game_ID=gameID, mod_title=os.path.basename(mod_found))
+        # end_time = datetime.datetime.now()
+        # print("Time ended: " + str(end_time))
+        # print("Time spent saving DB: " + str(end_time - start_time) + "\n")
 
     # Get ORIGINAL ISO db first
     original_iso_db = os.path.join(Path(game_mod_dir), Path(ORIGINAL_ISO_DIR.format(gameID)))
 
-    combined_file_dict = {}
-
     with open(os.path.join(original_iso_db, DB_JSON), "r") as file:
-        combined_file_dict = json.load(file)
+        iso_file_dict = json.load(file)
 
-    # Load all other dictionaries, OR them into the combined one
-    for index in range(len(active_mods)):
-        with open(os.path.join(Path(active_mod_found[index]), DB_JSON), "r") as file:
-            new_dict_to_add = json.load(file)
-            # Get the keys of the dictionary, update that key in combined_file_dict
-            new_dict_keys = new_dict_to_add.keys()
-            for keys in new_dict_keys:
-                combined_file_dict[keys].update(new_dict_to_add[keys])
+    # # Save the ISO first, then save all mods in order on top
+    # # Write dict to gameID_MOD folder
+    mod_iso_dir = os.path.join(Path(game_mod_dir), Path(MOD_ISO_DIR.format(gameID)))
 
-    # Write dict to gameID_MOD folder
-    mod_iso_db = os.path.join(Path(game_mod_dir), Path(MOD_ISO_DIR.format(gameID)))
+    # ATTEMPT #3: The directory cannonball run.
+    # Goal: walk paths, use directories as keys, trace through until we find files and write.
+    # main_iso_dict = master list of files. DON'T TOUCH THIS. This gets updated with our dict_search_ptr iterating through everything in the directories.
+    main_iso_dict = iso_file_dict
 
-    # Note: we don't use this for the next function because R/W times slow this down a ton. We now keep this optionally as a debug toggle.
+    # If this is enabled, ignore warnings in files that don't normally exist in the filesystem.
+    check_ignore_toggle = int(get_config_option(SETTINGS_INI,
+                                            "config",
+                                            "AppSettings",
+                                            "ignoreOriginalFileWarnings"))
+
+    for mod_path in active_mod_found:
+        path_to_mod_root = mod_path
+        mod_title = os.path.basename(path_to_mod_root)
+        dict_search_ptr = None
+        skip_added_files_check = False
+        for dirpath, dirnames, filenames in os.walk(path_to_mod_root, topdown=True):
+            curr_dir_basename = os.path.basename(dirpath)  # One level up from dirnames being tested
+
+            # Try key search w/ pointer here for top dir
+            try:
+                if not dict_search_ptr:
+                    # Set up our search ptr here
+                    dict_search_ptr = main_iso_dict[curr_dir_basename]
+                else:
+                    # Otherwise, move down directories
+                    dict_search_ptr = dict_search_ptr[curr_dir_basename]
+            except:
+                # if the above doesn't work, it's for the following reasons:
+                # 1. It's the base directory
+                if curr_dir_basename == os.path.basename(path_to_mod_root):
+                    continue
+                # if the above doesn't work, we ended moving down directories, so set up the next based on where we enter from with os.walk
+                dict_search_ptr = main_iso_dict
+                dict_search_ptr = dict_search_ptr[curr_dir_basename]
+                pass
+
+            def handle_file_db_writes():
+                nonlocal filenames
+                nonlocal dict_search_ptr
+                nonlocal skip_added_files_check
+                nonlocal check_ignore_toggle
+                for filename in filenames:
+                    if filename == "desktop.ini":
+                        continue
+                    # Original location to return to
+                    fileLoc = os.path.join(dirpath, filename)
+
+                    # File type (for tagging and organization)
+                    fileType = os.path.splitext(filename)[1]
+
+                    # Checksum of file (in case we need to compare those and source the original)
+                    with open(fileLoc, 'rb', buffering=0) as f:
+                        fileHash256 = hashlib.file_digest(f, 'sha256').hexdigest()
+
+                    # Store to current directory's dictionary
+                    # there might be some caps problems here, so fix that for the key, otherwise dupe keys can happen.
+                    try:
+                        # This is our dummy check. If this fails, then we except. This verifies the file/folder name exists.
+                        dict_search_ptr[filename]
+                        # If it does work, the above does nothing, update dict normally
+                        dict_search_ptr.update({filename: [fileLoc, fileType, fileHash256]})
+                    except KeyError as e:
+                        # Add error checking for new files.
+                        is_corrected = False
+                        # For now, the big error is with file extensions, as case matters for those.
+                        # This loop is goofy, but we're doing it because I am a tired man.
+                        all_original_file_names = [os.path.basename(item[0]) for item in list(dict_search_ptr.values())]
+                        for item in all_original_file_names:
+                            # If the names match (ignoring case), fix the title and the extension to match the original's
+                            if filename.casefold() == item.casefold():
+                                # print("Normalized extension for: " + filename + "\nInto: " + item)
+                                dict_search_ptr.update({item: [fileLoc, os.path.splitext(item)[1], fileHash256]})
+                                is_corrected = True
+                                break
+
+                        if is_corrected:
+                            continue
+
+                        # If either toggle is on, ignore for the rest of the mod pack or for all mod packs with the ignore_toggle
+                        if skip_added_files_check or check_ignore_toggle:
+                            dict_search_ptr.update({filename: [fileLoc, fileType, fileHash256]})
+                            continue
+
+                        # If we found a file that doesn't normally exist, warn a brother.
+                        warn_text = "The file named:\n" + str(filename) + ("\nFrom the mod:\n" + mod_title
+                                                                           + "\n\nIs either unexpected or considered an "
+                                                                             "original file by the original game's file system.\n"
+                                                                          "Press OK to accept all files like this in this specific mod, "
+                                                                          "or press Cancel to ignore this file and"
+                                                                             " to ask this again for each file in this specific mod.\n\n"
+                                                                             "Hint: To disable this warning entirely when saving mods next time, "
+                                                                             "enable: \"Disable file warnings when saving mods\" in the settings tab.")
+                        dialog = WarningWindow(title="Unexpected file found!", warning_text=warn_text)
+                        if dialog.exec():
+                            # If they press ok, update the dict with the file and skip the rest.
+                            dict_search_ptr.update({filename: [fileLoc, fileType, fileHash256]})
+                            skip_added_files_check = True
+                        else:
+                            # If cancelled, don't add file.
+                            # In the future, add another button to allow accepting the file but querying again.
+                            pass
+                        pass
+                    pass
+
+            if curr_dir_basename not in path_to_mod_root:
+                # Handle files first, then directories
+                handle_file_db_writes()
+            pass
+
+    # Toggle to write this file or not, since it isn't necessary. But it is helpful for debugging different build outputs.
     write_final_DB = int(get_config_option(SETTINGS_INI,
-                                       "config",
-                                       "AppSettings",
-                                       "createDBForFinalOutput"))
+                                           "config",
+                                           "AppSettings",
+                                           "createDBForFinalOutput"))
     if write_final_DB:
-        with open(os.path.join(mod_iso_db, Path(DB_JSON)), "w") as file:
-            json.dump(combined_file_dict, file, indent=4)  # indent for pretty-printing
+        with open(os.path.join(mod_iso_dir, Path(DB_JSON)), "w") as file:
+            json.dump(main_iso_dict, file, indent=4)  # indent for pretty-printing
 
-    return mod_iso_db, combined_file_dict
+    return mod_iso_dir, main_iso_dict
 
 
 def move_mod_files_to_final_place(mod_iso_db, file_dict):
@@ -435,7 +515,6 @@ def recurse_subfolders_on_save(filedata, new_directory, sub_folder):
             recurse_subfolders_on_save(subdata, new_directory, subname)
         elif isinstance(subdata, list):
             shutil.copy(subdata[0], new_directory)
-    pass
     pass
 
 def create_mod_dirs(new_mod_data, path_to_add):

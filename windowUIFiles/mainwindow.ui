@@ -482,7 +482,7 @@
               <item row="2" column="0">
                <widget class="QCheckBox" name="checkBox_4">
                 <property name="text">
-                 <string>Automatically check for mod updates (WIP, non-functional)</string>
+                 <string>Disable file warnings when saving mods that inject original files (WARNING: ALL FILES BECOME VALID WITH THIS ENABLED)</string>
                 </property>
                </widget>
               </item>
