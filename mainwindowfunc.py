@@ -639,8 +639,16 @@ def start_dolphin_game(game_title):
     print(params)
     try:
         if sys.platform == "win32":
+            # Change current working directory to where dolphin is so that the local environment variables work properly
+            prev_dir = os.getcwd()
+            os.chdir(Path(path_to_dolphin))
+
+            # Start the process
             dolphin_proc = subprocess.Popen(params,
                                 creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP)
+
+            # pop the directory back afterward to the actual dir of RCMM
+            os.chdir(prev_dir)
         else:
             dolphin_proc = subprocess.Popen(params)
         return

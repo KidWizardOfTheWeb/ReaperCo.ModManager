@@ -397,6 +397,9 @@ def merge_mod_dbs(active_mods, game_title):
                 nonlocal dict_search_ptr
                 nonlocal skip_added_files_check
                 nonlocal check_ignore_toggle
+                nonlocal game_mod_dir
+                nonlocal gameID
+                nonlocal curr_dir_basename
                 for filename in filenames:
                     if filename == "desktop.ini":
                         continue
@@ -422,7 +425,11 @@ def merge_mod_dbs(active_mods, game_title):
                         is_corrected = False
                         # For now, the big error is with file extensions, as case matters for those.
                         # This loop is goofy, but we're doing it because I am a tired man.
-                        all_original_file_names = [os.path.basename(item[0]) for item in list(dict_search_ptr.values())]
+
+                        # THIS LIST COMPREHENSION DOES NOT COVER FOR DICTS BEING IN THE LIST, try below:
+                        # https://stackoverflow.com/questions/1724693/find-a-file-in-python
+                        # all_original_file_names = [os.path.basename(item[0]) for item in list(dict_search_ptr.values())]
+                        all_original_file_names = os.listdir(Path(game_mod_dir) / Path(ORIGINAL_ISO_DIR.format(gameID)) / Path(curr_dir_basename))
                         for item in all_original_file_names:
                             # If the names match (ignoring case), fix the title and the extension to match the original's
                             if filename.casefold() == item.casefold():

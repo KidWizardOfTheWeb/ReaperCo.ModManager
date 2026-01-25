@@ -338,6 +338,15 @@ class MainWindow(QMainWindow):
     def save_mods(self, export_mods=None):
         # Save ALL activated mod databases here
 
+        # If there are NO MODS, do NOT let them save.
+        # Thanks dreamsyntax for testing that I cannot believe I didn't think of that.
+        if self.modsTableWidget.rowCount() == 0:
+            dialog = WarningWindow(self, title="No mods in mod list.", warning_text="No mods to save!\nInstall or create some mods first with the \"Add Mod\" button.")
+            if dialog.exec():
+                return
+            else:
+                return
+
         # So instead of getting enabled mods, get the mods that are checked, from top to bottom
 
         # Reconstruct our DB (yes, fully with new GUIDs)
