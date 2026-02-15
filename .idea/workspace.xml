@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Fixed a file walk issue for multiple directories in one subdirectory">
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Fixed dolphin local directory not being applied, fixed some file parsing on save, fixed empty mods list warning">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainwindowfunc.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowfunc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainwindowui.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modfileutils.py" beforeDir="false" afterPath="$PROJECT_DIR$/modfileutils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -415,7 +413,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768246852411</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Fixed dolphin local directory not being applied, fixed some file parsing on save, fixed empty mods list warning">
+      <option name="closed" value="true" />
+      <created>1769373883126</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1769373883126</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -457,7 +463,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed a bug where nonexistent mod folders may not exist and permeate in DBs" />
     <MESSAGE value="Fixed a bug where files not included in base files are never removed on save" />
     <MESSAGE value="Fixed a bug where DBs are not regenerated on save, fixed multiple dolphin instances opening" />
     <MESSAGE value="Fixed a bug where the directory to refresh on final move did not exist" />
@@ -482,7 +487,8 @@
     <MESSAGE value="Overhauled saving process entirely (again). Now uses recursion for databases, saving mods." />
     <MESSAGE value="Updated requirements.txt" />
     <MESSAGE value="Fixed a file walk issue for multiple directories in one subdirectory" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed a file walk issue for multiple directories in one subdirectory" />
+    <MESSAGE value="Fixed dolphin local directory not being applied, fixed some file parsing on save, fixed empty mods list warning" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed dolphin local directory not being applied, fixed some file parsing on save, fixed empty mods list warning" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
