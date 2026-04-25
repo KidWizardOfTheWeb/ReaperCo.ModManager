@@ -19,6 +19,7 @@ from pathlib import Path, PurePath, WindowsPath
 from PyQt6.QtWidgets import QFileDialog
 
 from warningui import WarningWindow
+from windowdialogfactory import WindowFactory
 
 
 def check_paths():
@@ -657,7 +658,7 @@ def start_dolphin_game(game_title):
         return
 
 
-def create_mod_processing(game_title):
+def create_mod_processing(game_title, return_path=False):
     create_window = AddModWindow()
     if create_window.exec():
         # Get ALL relevant details from window here, create new mod dirs as needed
@@ -705,6 +706,9 @@ def create_mod_processing(game_title):
 
     # Generate an info file for the mod. This will be used for the UI in the QTableView when added
     generate_modInfo_ini_file(new_mod_data, path_to_mods_folder)
+
+    if return_path:
+        return path_to_mods_folder, new_mod_data["Mod Title"]
     pass
 
 
@@ -818,18 +822,51 @@ def install_mod_by_folder(game_title, path_to_folder):
     game_mod_dir = get_path_to_game_folder(game_title)
     gameID = os.path.basename(game_mod_dir)
     path_to_mods_folder = os.path.join(game_mod_dir, Path(MOD_PACK_DIR.format(gameID)))
+    path_to_extracted_mod = Path(path_to_mods_folder, str(os.path.basename(path_to_folder).removesuffix(".zip")))
 
-    # Hit the unzip, chewy!
+    # Hit the unzip, chewie!
     # Make sure to set the target directory as the mods folder first though...
-    # TODO: Make sure we don't just overwrite existing mods. Somehow...
-    # For now though, it will.
-    with zipfile.ZipFile(path_to_folder, "r") as zip_ref:
-        zip_ref.extractall(path_to_mods_folder)
+    new_path = None
 
-    # If successful, tell them it was lol.
+    # Check if there are mods in the path already.
+    if os.listdir(path_to_mods_folder):
+        # If this triggers, we have mods here.
+        # Ask user if they want to overwrite the entire mod or add ontop.
+        # dialog = WarningWindow(title="Warning: existing files found!", warning_text="Existing mod files found. Replace all files in this mod?")
+        dialog = WindowFactory(window_file="installmodconflictoptions.ui")
+        if dialog.exec():
+            if dialog.replaceFilesRadioButton.isChecked():
+                # Remove ALL FILES in the existing path first, then extract to it.
+                if os.path.exists(path_to_extracted_mod):
+                    shutil.rmtree(path_to_extracted_mod)
+                # Generate the directory again and place files
+                os.makedirs(path_to_extracted_mod, exist_ok=True)
+                pass
+            elif dialog.overwriteFilesRadioButton.isChecked():
+                # Just pass, extracting is nondestructive so you can proceed
+                pass
+            elif dialog.createModRadioButton.isChecked():
+                # Create a new mod instead. Then come back to the rest of execution.
+                # Return the new path and new name as a tuple.
+                new_path, new_name = create_mod_processing(game_title, return_path=True)
+            pass
+        else:
+            return
+        pass
+
+    if new_path:
+        # If we get a new path for the mod, extract to that instead
+        with zipfile.ZipFile(path_to_folder, "r") as zip_ref:
+            zip_ref.extractall(new_path)
+    else:
+        # Regular extraction behavior
+        with zipfile.ZipFile(path_to_folder, "r") as zip_ref:
+            zip_ref.extractall(path_to_mods_folder)
+
+    # If successful, send notification.
     zip_name = os.path.basename(path_to_folder)
 
-    dialog = WarningWindow(title= "Success!", warning_text= zip_name + " unzipped successfully!")
+    dialog = WarningWindow(title="Success!", warning_text= zip_name + " unzipped successfully!")
     dialog.exec()
     pass
 
