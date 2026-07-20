@@ -46,11 +46,8 @@ jobs:
           path: dist/
 
       - name: Draft Release
-        uses: softprops/action-gh-release@v3
+        uses: ncipollo/release-action@v1
         with:
           draft: true
-          working_directory: dist/ReaperCoModManager
-          files: |
-            *
-            _internal/*
+          artifacts: "dist/ReaperCoModManager/"
 
