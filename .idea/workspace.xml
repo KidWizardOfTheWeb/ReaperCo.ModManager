@@ -4,9 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Fixed dolphin local directory not being applied, fixed some file parsing on save, fixed empty mods list warning">
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Added options to handle mod conflicts on zip installation">
+      <change afterPath="$PROJECT_DIR$/ReaperCoModManager.spec" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/appAssets/OLLIELG.ICO" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/appAssets/OLLIELG.ICO" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainwindowui.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/about.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/about.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/addmodfromoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/addmodfromoptions.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/addnewmod.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/addnewmod.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/compilemodoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/compilemodoptions.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/installmodconflictoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/installmodconflictoptions.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/mainwindow.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/mainwindow.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windowUIFiles/reordermods.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/reordermods.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,9 +93,18 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/smasi/Documents/RCOModManager/windowUIFiles&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\smasi\Documents\RCOModManager\windowUIFiles" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\smasi\Documents\RCOModManager\_internal" />
+    </key>
+  </component>
   <component name="RunManager" selected="Python.MainRun">
     <configuration name="MainRun" type="PythonConfigurationType" factoryName="Python">
       <module name="RCOModManager" />
@@ -421,7 +440,23 @@
       <option name="project" value="LOCAL" />
       <updated>1769373883126</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Changed encoding in requirements.txt to utf-8">
+      <option name="closed" value="true" />
+      <created>1771178364667</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1771178364668</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Added options to handle mod conflicts on zip installation">
+      <option name="closed" value="true" />
+      <created>1777084170635</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1777084170635</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -463,8 +498,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed a bug where files not included in base files are never removed on save" />
-    <MESSAGE value="Fixed a bug where DBs are not regenerated on save, fixed multiple dolphin instances opening" />
     <MESSAGE value="Fixed a bug where the directory to refresh on final move did not exist" />
     <MESSAGE value="Add mod button functional, zip files no longer appear, optimized enable mod checkbox, discord RPC added" />
     <MESSAGE value="Launch settings added, can now start with or without dolphin launcher active" />
@@ -488,7 +521,9 @@
     <MESSAGE value="Updated requirements.txt" />
     <MESSAGE value="Fixed a file walk issue for multiple directories in one subdirectory" />
     <MESSAGE value="Fixed dolphin local directory not being applied, fixed some file parsing on save, fixed empty mods list warning" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed dolphin local directory not being applied, fixed some file parsing on save, fixed empty mods list warning" />
+    <MESSAGE value="Changed encoding in requirements.txt to utf-8" />
+    <MESSAGE value="Added options to handle mod conflicts on zip installation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added options to handle mod conflicts on zip installation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -505,7 +540,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>505</line>
+          <line>506</line>
           <option name="timeStamp" value="231" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -539,16 +574,6 @@
           <option name="timeStamp" value="289" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>813</line>
-          <option name="timeStamp" value="303" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>825</line>
-          <option name="timeStamp" value="304" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowui.py</url>
           <line>526</line>
           <option name="timeStamp" value="407" />
@@ -560,17 +585,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>272</line>
+          <line>273</line>
           <option name="timeStamp" value="439" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>306</line>
+          <line>307</line>
           <option name="timeStamp" value="441" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>877</line>
+          <line>914</line>
           <option name="timeStamp" value="443" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -612,6 +637,16 @@
           <url>file://$PROJECT_DIR$/modfileutils.py</url>
           <line>479</line>
           <option name="timeStamp" value="586" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
+          <line>837</line>
+          <option name="timeStamp" value="594" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
+          <line>846</line>
+          <option name="timeStamp" value="595" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

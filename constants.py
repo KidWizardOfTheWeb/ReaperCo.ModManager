@@ -1,6 +1,6 @@
 from pathlib import Path
 from sys import platform
-UI_FOLDER_PATH = Path("windowUIFiles")
+UI_FOLDER_PATH = Path("_internal", "windowUIFiles")
 
 # Some programmers hate magic strings. While this seemed weird to me at first to write this as a constant,
 # I think it'll just be easier to have this available as an autofill tbh.

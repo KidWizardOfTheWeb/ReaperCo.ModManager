@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         # Load mainwindow file
         uic.loadUi(os.path.join(UI_FOLDER_PATH, 'mainwindow.ui'), self)
-        ico_path = QIcon(os.path.join(os.getcwd(), "appAssets", "OLLIELG.ICO"))
+        ico_path = QIcon(os.path.join(os.getcwd(), "_internal", "appAssets", "OLLIELG.ICO"))
         self.setWindowIcon(ico_path)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
