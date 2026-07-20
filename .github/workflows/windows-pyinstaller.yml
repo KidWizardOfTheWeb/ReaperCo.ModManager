@@ -49,5 +49,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           draft: true
+          commit: true
           artifacts: "dist/ReaperCoModManager/"
 
