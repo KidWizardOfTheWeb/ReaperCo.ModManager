@@ -4,19 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Added options to handle mod conflicts on zip installation">
-      <change afterPath="$PROJECT_DIR$/ReaperCoModManager.spec" afterDir="false" />
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Set up pyinstaller CI/CD for git actions">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/appAssets/OLLIELG.ICO" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/appAssets/OLLIELG.ICO" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainwindowui.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windowUIFiles/about.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/about.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windowUIFiles/addmodfromoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/addmodfromoptions.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windowUIFiles/addnewmod.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/addnewmod.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windowUIFiles/compilemodoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/compilemodoptions.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windowUIFiles/installmodconflictoptions.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/installmodconflictoptions.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windowUIFiles/mainwindow.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/mainwindow.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windowUIFiles/reordermods.ui" beforeDir="false" afterPath="$PROJECT_DIR$/_internal/windowUIFiles/reordermods.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -456,7 +445,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777084170635</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Set up pyinstaller CI/CD for git actions">
+      <option name="closed" value="true" />
+      <created>1784570029927</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1784570029928</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -498,7 +495,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed a bug where the directory to refresh on final move did not exist" />
     <MESSAGE value="Add mod button functional, zip files no longer appear, optimized enable mod checkbox, discord RPC added" />
     <MESSAGE value="Launch settings added, can now start with or without dolphin launcher active" />
     <MESSAGE value="Removed PyQt5 from reqs, now only has PyQt6 required" />
@@ -523,7 +519,8 @@
     <MESSAGE value="Fixed dolphin local directory not being applied, fixed some file parsing on save, fixed empty mods list warning" />
     <MESSAGE value="Changed encoding in requirements.txt to utf-8" />
     <MESSAGE value="Added options to handle mod conflicts on zip installation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added options to handle mod conflicts on zip installation" />
+    <MESSAGE value="Set up pyinstaller CI/CD for git actions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Set up pyinstaller CI/CD for git actions" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
