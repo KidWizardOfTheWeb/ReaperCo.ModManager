@@ -1,9 +1,6 @@
 name: Build for windows
 
-on:
-  push:
-    tags:
-      - '*'
+on: [push]
 
 jobs:
   build:
@@ -48,9 +45,14 @@ jobs:
           name: release-dists
           path: dist/
 
+      - name: Zip artifact for release w/ powershell
+        run: |
+          Compress-Archive -Path dist\ReaperCoModManager\* -DestinationPath .\ReaperCoModManager.zip
+
       - name: Draft Release
-        uses: ncipollo/release-action@v1
+        uses: softprops/action-gh-release@v3
         with:
           draft: true
-          artifacts: "dist/ReaperCoModManager/"
+          files: |
+            ReaperCoModManager.zip
 

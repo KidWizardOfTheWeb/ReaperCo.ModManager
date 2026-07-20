@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Set up pyinstaller CI/CD for git actions">
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Action activates when new tag is pushed instead">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/windows-pyinstaller.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/windows-pyinstaller.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -453,7 +454,71 @@
       <option name="project" value="LOCAL" />
       <updated>1784570029928</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Fix CI/CD script setup process">
+      <option name="closed" value="true" />
+      <created>1784570874782</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1784570874782</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Fix CI/CD script setup process">
+      <option name="closed" value="true" />
+      <created>1784570929042</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1784570929042</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Attempt to add automated release drafting">
+      <option name="closed" value="true" />
+      <created>1784572597917</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1784572597917</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Wildcard grabs all files in working folder now">
+      <option name="closed" value="true" />
+      <created>1784572800023</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1784572800023</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Moved working directory one layer deeper for action parsing">
+      <option name="closed" value="true" />
+      <created>1784572989700</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1784572989700</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Trying ncipollo release action">
+      <option name="closed" value="true" />
+      <created>1784573435538</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1784573435538</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Using commit as a tag for action">
+      <option name="closed" value="true" />
+      <created>1784573662588</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1784573662588</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Action activates when new tag is pushed instead">
+      <option name="closed" value="true" />
+      <created>1784573975813</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1784573975813</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -477,6 +542,11 @@
         <entry key="MAIN">
           <value>
             <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
               <option name="FILTERS">
                 <map>
                   <entry key="branch">
@@ -495,13 +565,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add mod button functional, zip files no longer appear, optimized enable mod checkbox, discord RPC added" />
-    <MESSAGE value="Launch settings added, can now start with or without dolphin launcher active" />
-    <MESSAGE value="Removed PyQt5 from reqs, now only has PyQt6 required" />
-    <MESSAGE value="Fixed windows bug that added the secret desktop.ini config to the modpacks" />
-    <MESSAGE value="Updated some bugs found for file writes, added more fixes for edge cases&#10;NOTE: REGENERATE YOUR modsDB.ini AND settings.ini FILES AFTER THIS IS MADE" />
-    <MESSAGE value="Replaced listview with table widget, optimization attempts" />
-    <MESSAGE value="Redid entire saving/loading process for mods" />
     <MESSAGE value="Added RPC back" />
     <MESSAGE value="Added options for adding mods" />
     <MESSAGE value="Heavily optimized saving mods with hashing, fixed layering system oversight ordering alphabetically instead" />
@@ -520,7 +583,14 @@
     <MESSAGE value="Changed encoding in requirements.txt to utf-8" />
     <MESSAGE value="Added options to handle mod conflicts on zip installation" />
     <MESSAGE value="Set up pyinstaller CI/CD for git actions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Set up pyinstaller CI/CD for git actions" />
+    <MESSAGE value="Fix CI/CD script setup process" />
+    <MESSAGE value="Attempt to add automated release drafting" />
+    <MESSAGE value="Wildcard grabs all files in working folder now" />
+    <MESSAGE value="Moved working directory one layer deeper for action parsing" />
+    <MESSAGE value="Trying ncipollo release action" />
+    <MESSAGE value="Using commit as a tag for action" />
+    <MESSAGE value="Action activates when new tag is pushed instead" />
+    <option name="LAST_COMMIT_MESSAGE" value="Action activates when new tag is pushed instead" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
