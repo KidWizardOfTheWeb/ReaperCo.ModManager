@@ -49,7 +49,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           draft: true
-          working_directory: dist
+          working_directory: dist/ReaperCoModManager
           files: |
-            ReaperCoModManager/*
+            *
+            _internal/*
 
