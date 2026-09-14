@@ -1,6 +1,9 @@
 name: Build for windows
 
-on: [push]
+on:
+  push:
+    tags:
+      - '*'
 
 jobs:
   build:
