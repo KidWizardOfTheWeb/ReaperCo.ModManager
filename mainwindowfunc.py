@@ -829,10 +829,11 @@ def install_mod_by_folder(game_title, path_to_folder):
     new_path = None
 
     # Check if there are mods in the path already.
-    if os.listdir(path_to_mods_folder):
+    if path_to_extracted_mod.name in os.listdir(path_to_mods_folder):
         # If this triggers, we have mods here.
         # Ask user if they want to overwrite the entire mod or add ontop.
         # dialog = WarningWindow(title="Warning: existing files found!", warning_text="Existing mod files found. Replace all files in this mod?")
+
         dialog = WindowFactory(window_file="installmodconflictoptions.ui")
         if dialog.exec():
             if dialog.replaceFilesRadioButton.isChecked():

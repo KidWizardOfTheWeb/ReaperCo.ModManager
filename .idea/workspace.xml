@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Action activates when new tag is pushed instead">
+    <list default="true" id="e9a71cce-d857-4619-a4d4-1e84aa6bc4a5" name="Changes" comment="Action only drafts release with tag push">
       <change beforePath="$PROJECT_DIR$/.github/workflows/windows-pyinstaller.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/windows-pyinstaller.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainwindowfunc.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainwindowfunc.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,23 +71,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.MainRun.executor&quot;: &quot;Run&quot;,
-    &quot;Python.filehashutils.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.mainwindowui.executor&quot;: &quot;Run&quot;,
-    &quot;Python.reordermodsui.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/smasi/Documents/RCOModManager/windowUIFiles&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.MainRun.executor": "Run",
+    "Python.filehashutils.executor": "Run",
+    "Python.main.executor": "Debug",
+    "Python.mainwindowui.executor": "Run",
+    "Python.reordermodsui.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/smasi/Documents/RCOModManager/windowUIFiles",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\smasi\Documents\RCOModManager\windowUIFiles" />
@@ -518,7 +519,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784573975813</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="Using ZIP file for release artifact">
+      <option name="closed" value="true" />
+      <created>1784574756749</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1784574756749</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -565,7 +574,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added RPC back" />
     <MESSAGE value="Added options for adding mods" />
     <MESSAGE value="Heavily optimized saving mods with hashing, fixed layering system oversight ordering alphabetically instead" />
     <MESSAGE value="One line cleanup from last commit" />
@@ -590,7 +598,8 @@
     <MESSAGE value="Trying ncipollo release action" />
     <MESSAGE value="Using commit as a tag for action" />
     <MESSAGE value="Action activates when new tag is pushed instead" />
-    <option name="LAST_COMMIT_MESSAGE" value="Action activates when new tag is pushed instead" />
+    <MESSAGE value="Using ZIP file for release artifact" />
+    <option name="LAST_COMMIT_MESSAGE" value="Using ZIP file for release artifact" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -662,7 +671,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>914</line>
+          <line>915</line>
           <option name="timeStamp" value="443" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -707,13 +716,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>837</line>
+          <line>838</line>
           <option name="timeStamp" value="594" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
-          <line>846</line>
+          <line>847</line>
           <option name="timeStamp" value="595" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
+          <line>836</line>
+          <option name="timeStamp" value="596" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/mainwindowfunc.py</url>
+          <line>831</line>
+          <option name="timeStamp" value="597" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
