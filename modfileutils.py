@@ -8,7 +8,6 @@ import shutil
 import hashlib
 import uuid
 # import datetime
-import tkinter
 # from tkinter import filedialog
 from constants import DOLPHIN_TOOL, SETTINGS_INI, MODSDB_INI, MOD_PACK_DIR, ORIGINAL_ISO_DIR, MOD_ISO_DIR, DB_JSON
 from filemanagerutils import get_config_option, set_config_option
