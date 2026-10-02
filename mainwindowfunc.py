@@ -167,7 +167,6 @@ def populate_modlist(game_title):
 # Add games and always add "add game option" at the end
 def update_gamelist_combobox():
     # Read all games from settings.ini, only return values (the actual game titles)
-    # game_list = get_config_option(SETTINGS_INI, "config","GameList", return_keys=True)
 
     # Get keys (titles) and values (gameIDs)
     game_list = get_config_option(SETTINGS_INI, "config","GameList", return_keys=True, return_values=True)

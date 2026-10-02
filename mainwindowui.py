@@ -316,6 +316,8 @@ class MainWindow(QMainWindow):
                 pass
 
             if install_options_window.installArchiveRadioButton.isChecked():
+                # FUTURE NOTE: this is actually install folder, above is the archive one.
+                # Weird that I did it like that, but we can fix that later.
                 # path_to_directory = QFileDialog.getExistingDirectory(self, caption="Select Mod Folder")
                 # install_mod_by_folder(self.currentGameCombobox.currentText(), path_to_directory)
                 pass
@@ -331,21 +333,38 @@ class MainWindow(QMainWindow):
 
     # Wrap save mods and start the dolphin game selected
     def save_and_start_game(self):
-        self.save_mods()
+        try:
+            self.save_mods()
+        except Exception as e:
+            # Exceptions stop the game from being attempted to be ran.
+            # Namely, when a game doesn't exist or mods do not exist.
+            print(e)
+            return
         start_dolphin_game(self.currentGameCombobox.currentText())
         pass
 
     def save_mods(self, export_mods=None):
         # Save ALL activated mod databases here
 
+        # If there are NO GAMES, do NOT let them save.
+        game_dict = get_config_option(SETTINGS_INI, "config", "GameList", return_keys=True, return_values=True)
+        if not game_dict:
+            dialog = WarningWindow(self, title="No games in game list.",
+                                   warning_text="No game(s) detected!\nAdd a game first with the \"Add new game\" dropdown box below.")
+            if dialog.exec():
+                raise Exception
+            else:
+                raise Exception
+
+
         # If there are NO MODS, do NOT let them save.
         # Thanks dreamsyntax for testing that I cannot believe I didn't think of that.
         if self.modsTableWidget.rowCount() == 0:
             dialog = WarningWindow(self, title="No mods in mod list.", warning_text="No mods to save!\nInstall or create some mods first with the \"Add Mod\" button.")
             if dialog.exec():
-                return
+                raise Exception
             else:
-                return
+                raise Exception
 
         # So instead of getting enabled mods, get the mods that are checked, from top to bottom
 
